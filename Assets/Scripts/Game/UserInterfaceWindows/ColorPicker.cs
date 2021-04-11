@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: TheLacus
-// Contributors:
+// Contributors:    Kyle Lee (https://github.com/jimmwatson)
 //
 // Notes:
 //
@@ -78,7 +78,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             pickerPanel.HorizontalAlignment = HorizontalAlignment.Center;
             pickerPanel.VerticalAlignment = VerticalAlignment.Middle;
             pickerPanel.BackgroundColor = new Color(0, 0, 0, 0.7f);
-            pickerPanel.Outline.Enabled = true;
+            pickerPanel.Outline.Enabled = false;
             ParentPanel.Components.Add(pickerPanel);
 
             var hexSymbol = new TextLabel();

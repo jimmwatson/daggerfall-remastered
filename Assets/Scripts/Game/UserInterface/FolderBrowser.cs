@@ -1,10 +1,10 @@
-﻿// Project:         Daggerfall Tools For Unity
+// Project:         Daggerfall Tools For Unity
 // Copyright:       Copyright (C) 2009-2021 Daggerfall Workshop
 // Web Site:        http://www.dfworkshop.net
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:    
+// Contributors:    Kyle Lee (https://github.com/jimmwatson)
 // 
 // Notes:
 //
@@ -47,10 +47,10 @@ namespace DaggerfallWorkshop.Game.UserInterface
         Button confirmButton = new Button();
         Vector2 lastSize;
 
-        Color unselectedColor = new Color(0.8f, 0.8f, 0.8f, 1.0f);
-        Color scrollerBackgroundColor = new Color(0.1f, 0.1f, 0.1f, 0.4f);
-        Color confirmEnabledButtonColor = new Color(0.0f, 0.5f, 0.0f, 0.4f);
-        Color confirmDisabledButtonColor = new Color(0.5f, 0.0f, 0.0f, 0.4f);
+        Color unselectedColor = DaggerfallUI.MenuSecondaryTextColor;
+        Color scrollerBackgroundColor = DaggerfallUI.MenuSecondaryBackgroundColor;
+        Color confirmEnabledButtonColor = DaggerfallUI.MenuMediumSeaGreenOpaque;
+        Color confirmDisabledButtonColor = DaggerfallUI.MenuFireBrickOpaque;
 
         List<string> drives = new List<string>();
         List<string> folders = new List<string>();
@@ -129,9 +129,9 @@ namespace DaggerfallWorkshop.Game.UserInterface
         void Setup()
         {
             // Setup panels
-            drivePanel.Outline.Enabled = true;
-            folderPanel.Outline.Enabled = true;
-            pathPanel.Outline.Enabled = true;
+            drivePanel.Outline.Enabled = false;
+            folderPanel.Outline.Enabled = false;
+            pathPanel.Outline.Enabled = false;
             Components.Add(drivePanel);
             Components.Add(folderPanel);
             Components.Add(pathPanel);
@@ -141,14 +141,14 @@ namespace DaggerfallWorkshop.Game.UserInterface
             // Setup drive list
             drivePanel.Components.Add(driveList);
             driveList.TextColor = unselectedColor;
-            driveList.SelectedTextColor = DaggerfallUI.DaggerfallDefaultTextColor;
+            driveList.SelectedTextColor = DaggerfallUI.MenuKhaki;
             driveList.ShadowPosition = Vector2.zero;
             driveList.OnSelectItem += DriveList_OnSelectItem;
 
             // Setup folder list
             folderPanel.Components.Add(folderList);
             folderList.TextColor = unselectedColor;
-            folderList.SelectedTextColor = DaggerfallUI.DaggerfallDefaultTextColor;
+            folderList.SelectedTextColor = DaggerfallUI.MenuKhaki;
             folderList.ShadowPosition = Vector2.zero;
             folderList.OnUseSelectedItem += FolderList_OnUseSelectedItem;
             folderList.OnScroll += FolderList_OnScroll;
@@ -265,13 +265,15 @@ namespace DaggerfallWorkshop.Game.UserInterface
             pathLabel.VerticalAlignment = VerticalAlignment.Middle;
             pathLabel.ShadowPosition = Vector2.zero;
             pathLabel.MaxWidth = (int)pathPanel.Size.x - 4;
+            pathLabel.TextColor = DaggerfallUI.MenuKhaki;
 
             // Set confirm button
             //confirmButton.BackgroundColor = confirmButtonColor;
             confirmButton.Position = new Vector2(pathPanel.Position.x + pathPanel.Size.x + panelSeparatorWidth, pathPanel.Position.y);
             confirmButton.Size = new Vector2(confirmButtonWidth, pathPanel.Size.y);
-            confirmButton.Outline.Enabled = true;
+            confirmButton.Outline.Enabled = false;
             confirmButton.Label.Text = confirmButtonText;
+            confirmButton.Label.TextColor = DaggerfallUI.MenuKhaki;
             //confirmButton.Label.ShadowPosition = Vector2.zero;
         }
 

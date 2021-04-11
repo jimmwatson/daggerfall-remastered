@@ -1,4 +1,4 @@
-﻿Shader "Daggerfall/RetroPalettization"
+Shader "Daggerfall/RetroPalettization"
 {
 	Properties
 	{
@@ -50,14 +50,14 @@
 	        fixed4 frag (v2f i) : SV_Target
 	        {
                 fixed4 color = tex2D(_MainTex, i.texcoord);
-#ifdef EXCLUDE_SKY
+//#ifdef EXCLUDE_SKY
                 float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.texcoord);
                 depth = Linear01Depth(depth);
               
                 // Sky untouched
                 if (depth == 1)
-                  return color;
-#endif
+                  return fixed4(pow(round(pow(color.rgb, 1 / 2.0) * 192.0) / 192.0, 2.0), color.a);
+//#endif
                 
                 // Explore color space!
                 //fixed4 color = fixed4(i.texcoord, frac(_Time.x), 1.0);

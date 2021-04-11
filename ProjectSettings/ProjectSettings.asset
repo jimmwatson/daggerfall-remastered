@@ -12,8 +12,8 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: Daggerfall Workshop
-  productName: Daggerfall Unity
+  companyName: Kyle Lee
+  productName: Daggerfall Remastered
   defaultCursor: {fileID: 2800000, guid: 887ec86cd12e1624d8458c8d7950402a, type: 3}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -124,7 +124,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 0.10.27
+  bundleVersion: 0.01.00
   preloadedAssets:
   - {fileID: 11400000, guid: b7df2f040b496394c82fa580d167aeb2, type: 2}
   metroInputSource: 0
@@ -273,7 +273,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 553c2e4e7eb0612449b5a11dfae00978, type: 3}
+      m_Icon: {fileID: 2800000, guid: 5c35db431ff4aaf498a4c9e807e6e112, type: 3}
       m_Width: 128
       m_Height: 128
       m_Kind: 0

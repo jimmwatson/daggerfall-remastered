@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:    
+// Contributors:    Kyle Lee (https://github.com/jimmwatson)
 // 
 // Notes:
 //
@@ -55,7 +55,7 @@ namespace DaggerfallWorkshop
         [Range(0, 30)]
         public float FramesPerSecond = 0;
         public bool RandomStartFrame = true;
-        public ShadowCastingMode ShadowCasting = ShadowCastingMode.TwoSided;
+        public ShadowCastingMode ShadowCasting = ShadowCastingMode.Off;
         [Range(1, 127)]
         public int RandomWidth = 16;
         [Range(1, 127)]

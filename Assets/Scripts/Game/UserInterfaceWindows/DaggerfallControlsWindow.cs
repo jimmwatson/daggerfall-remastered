@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors: Justin Steele, jefetienne
+// Contributors: Justin Steele, jefetienne, Kyle Lee (https://github.com/jimmwatson)
 //
 // Notes:
 //
@@ -138,7 +138,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             currentBindingsButton = DaggerfallUI.AddButton(new Rect(268, 0, 50, 8), controlsPanel);
             currentBindingsButton.Label.ShadowPosition = Vector2.zero;
-            currentBindingsButton.Outline.Enabled = true;
+            currentBindingsButton.Outline.Enabled = false;
             currentBindingsButton.OnMouseClick += CurrentBindingsButton_OnMouseClick;
             currentBindingsButton.Label.Text = ControlsConfigManager.Instance.UsingPrimary ? "Primary" : "Secondary";
 

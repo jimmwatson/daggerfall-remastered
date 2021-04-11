@@ -1,0 +1,10 @@
+{
+    "SettingsVersion": null,
+    "Values": {
+        "GeneralSettings": {
+            "UseSunFlare": "False",
+            "CloudQuality": "256"
+        }
+    },
+    "$version": "v1"
+}

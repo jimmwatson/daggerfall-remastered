@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:    
+// Contributors:    Kyle Lee (https://github.com/jimmwatson)
 // 
 // Notes:
 //
@@ -70,9 +70,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         Checkbox enableController;
         Checkbox retro320x200WorldRendering;
 
-        Color unselectedTextColor = new Color(0.6f, 0.6f, 0.6f, 1f);
-        Color selectedTextColor = new Color(0.0f, 0.8f, 0.0f, 1.0f);
-        Color secondaryTextColor = new Color(0.8f, 0.8f, 0.8f, 1.0f);
+        Color unselectedTextColor = DaggerfallUI.MenuDefaultTextColor;
+        Color selectedTextColor = DaggerfallUI.MenuMediumSeaGreen;
+        Color secondaryTextColor = DaggerfallUI.MenuSecondaryTextColor;
 
         #endregion
 
@@ -84,7 +84,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         #region Fields
 
-        const string titleScreenFilename = "StartupBackground2";
+        const string titleScreenFilename = DaggerfallUI.MenuBackgroundPath1;
         const float panelSwipeTime = 1;
         const SongFiles titleSongFile = SongFiles.song_5strong;
 
@@ -93,9 +93,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         string testText;
         string okText;
 
-        Color backgroundColor = new Color(0, 0, 0, 0.8f);
-        Color confirmEnabledBackgroundColor = new Color(0.0f, 0.5f, 0.0f, 0.4f);
-        Color confirmDisabledBackgroundColor = new Color(0.5f, 0.0f, 0.0f, 0.4f);
+        Color backgroundColor = DaggerfallUI.MenuBackgroundColor;
+        Color confirmEnabledBackgroundColor = DaggerfallUI.MenuConfirmEnabledColor;
+        Color confirmDisabledBackgroundColor = DaggerfallUI.MenuConfirmDisabledColor;
 
         Resolution initialResolution;
         Resolution[] availableResolutions;
@@ -142,9 +142,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             exitButton.Size = new Vector2(20, 9);
             exitButton.HorizontalAlignment = HorizontalAlignment.Center;
             exitButton.VerticalAlignment = VerticalAlignment.Bottom;
-            exitButton.BackgroundColor = new Color(0.2f, 0.2f, 0.2f, 0.6f);
-            exitButton.Outline.Enabled = true;
+            exitButton.BackgroundColor = Color.clear;
+            exitButton.Outline.Enabled = false;
             exitButton.Label.Text = GetText("exit");
+            exitButton.Label.TextColor = DaggerfallUI.MenuKhaki;
             exitButton.OnMouseClick += ExitButton_OnMouseClick;
             exitButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.GameSetupExit);
             NativePanel.Components.Add(exitButton);
@@ -203,7 +204,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 titleTexture.filterMode = DaggerfallUI.Instance.GlobalFilterMode;
                 ParentPanel.BackgroundTexture = titleTexture;
-                ParentPanel.BackgroundTextureLayout = BackgroundLayout.ScaleToFit;
+                ParentPanel.BackgroundTextureLayout = BackgroundLayout.StretchToFill;
             }
 
             // Setup panel
@@ -211,7 +212,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             browserPanel.HorizontalAlignment = HorizontalAlignment.Center;
             browserPanel.VerticalAlignment = VerticalAlignment.Middle;
             browserPanel.Size = browserPanelSize;
-            browserPanel.Outline.Enabled = true;
+            browserPanel.Outline.Enabled = false;
             NativePanel.Components.Add(browserPanel);
 
             // Setup screen text
@@ -225,6 +226,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             // Setup folder browser
             browser.Position = new Vector2(4, 30);
             browser.Size = new Vector2(250, 104);
+            browser.BackgroundColor = DaggerfallUI.MenuSecondaryDisabledButtonColor;
             browser.HorizontalAlignment = HorizontalAlignment.Center;
             browser.ConfirmEnabled = false;
             browser.OnConfirmPath += Browser_OnConfirmPath;
@@ -247,6 +249,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             helpLabel.HorizontalAlignment = HorizontalAlignment.Center;
             helpLabel.ShadowPosition = Vector2.zero;
             helpLabel.Text = findArena2Tip;
+            helpLabel.TextColor = DaggerfallUI.MenuKhaki;
             browserPanel.Components.Add(helpLabel);
         }
 
@@ -257,9 +260,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             GameObjectHelper.CreateRMBBlockGameObject("CUSTAA06.RMB", 0, 0);
             backdropCreated = true;
 
-            // Clear background texture
-            ParentPanel.BackgroundTexture = null;
-            ParentPanel.BackgroundColor = Color.clear;
+            // Hack to keep background texture
+            ParentPanel.BackgroundTexture = titleTexture;
+            ParentPanel.BackgroundTextureLayout = BackgroundLayout.StretchToFill;
         }
 
         void ShowResolutionPanel()
@@ -276,7 +279,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 CreateBackdrop();
 
             // Add resolution panel
-            resolutionPanel.Outline.Enabled = true;
+            resolutionPanel.Outline.Enabled = false;
             resolutionPanel.BackgroundColor = backgroundColor;
             resolutionPanel.HorizontalAlignment = HorizontalAlignment.Left;
             resolutionPanel.VerticalAlignment = VerticalAlignment.Middle;
@@ -286,13 +289,14 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             // Add resolution title text
             TextLabel resolutionTitleLabel = new TextLabel();
             resolutionTitleLabel.Text = GetText("resolution");
+            resolutionTitleLabel.TextColor = DaggerfallUI.MenuKhaki;
             resolutionTitleLabel.Position = new Vector2(0, 2);
             //resolutionTitleLabel.ShadowPosition = Vector2.zero;
             resolutionTitleLabel.HorizontalAlignment = HorizontalAlignment.Center;
             resolutionPanel.Components.Add(resolutionTitleLabel);
 
             // Add resolution picker
-            resolutionList.BackgroundColor = new Color(0.1f, 0.1f, 0.1f, 0.5f);
+            resolutionList.BackgroundColor = DaggerfallUI.MenuSecondaryBackgroundColor;
             resolutionList.TextColor = unselectedTextColor;
             resolutionList.SelectedTextColor = selectedTextColor;
             resolutionList.ShadowPosition = Vector2.zero;
@@ -347,13 +351,14 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             // Add quality title text
             TextLabel qualityTitleLabel = new TextLabel();
             qualityTitleLabel.Text = GetText("quality");
+            qualityTitleLabel.TextColor = DaggerfallUI.MenuKhaki;
             qualityTitleLabel.Position = new Vector2(0, 92);
             //qualityTitleLabel.ShadowPosition = Vector2.zero;
             qualityTitleLabel.HorizontalAlignment = HorizontalAlignment.Center;
             resolutionPanel.Components.Add(qualityTitleLabel);
 
             // Add quality picker
-            qualityList.BackgroundColor = new Color(0.1f, 0.1f, 0.1f, 0.5f);
+            qualityList.BackgroundColor = DaggerfallUI.MenuSecondaryBackgroundColor;
             qualityList.TextColor = unselectedTextColor;
             qualityList.SelectedTextColor = selectedTextColor;
             qualityList.ShadowPosition = Vector2.zero;
@@ -377,9 +382,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             okText = GetText("okText");
             testOrConfirmButton.Position = new Vector2(0, 160);
             testOrConfirmButton.Size = new Vector2(40, 12);
-            testOrConfirmButton.Outline.Enabled = true;
+            testOrConfirmButton.Outline.Enabled = false;
+            testOrConfirmButton.Label.TextColor = DaggerfallUI.MenuKhaki;
             testOrConfirmButton.Label.Text = testText;
-            testOrConfirmButton.BackgroundColor = new Color(0.0f, 0.5f, 0.0f, 0.4f);
+            testOrConfirmButton.BackgroundColor = DaggerfallUI.MenuMediumSeaGreenOpaque;
             testOrConfirmButton.HorizontalAlignment = HorizontalAlignment.Center;
             testOrConfirmButton.OnMouseClick += ResolutionTestOrConfirmButton_OnMouseClick;
             resolutionPanel.Components.Add(testOrConfirmButton);
@@ -429,7 +435,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 CreateBackdrop();
 
             // Add options panel
-            optionsPanel.Outline.Enabled = true;
+            optionsPanel.Outline.Enabled = false;
             optionsPanel.BackgroundColor = backgroundColor;
             optionsPanel.HorizontalAlignment = HorizontalAlignment.Center;
             //optionsPanel.VerticalAlignment = VerticalAlignment.Middle;
@@ -439,10 +445,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             // Add title text
             TextLabel titleLabel = new TextLabel(DaggerfallUI.Instance.Font2);
-            titleLabel.Text = "Daggerfall Unity";
+            titleLabel.Text = "Daggerfall Remastered";
             titleLabel.Position = new Vector2(0, 15);
             titleLabel.TextScale = 1.4f;
             titleLabel.HorizontalAlignment = HorizontalAlignment.Center;
+            titleLabel.TextColor = DaggerfallUI.MenuKhaki;
             optionsPanel.Components.Add(titleLabel);
 
             // Add version text
@@ -493,14 +500,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             TextLabel modNoteLabel = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, new Vector2(0, 125), GetText("modNote"), optionsPanel);
             modNoteLabel.HorizontalAlignment = HorizontalAlignment.Center;
             modNoteLabel.ShadowPosition = Vector2.zero;
+            modNoteLabel.TextColor = DaggerfallUI.MenuKhaki;
 
             // Confirm button
             Button optionsConfirmButton = new Button();
             optionsConfirmButton.Position = new Vector2(0, optionsPanel.InteriorHeight - 15);
             optionsConfirmButton.Size = new Vector2(40, 12);
-            optionsConfirmButton.Outline.Enabled = true;
+            optionsConfirmButton.Outline.Enabled = false;
+            optionsConfirmButton.Label.TextColor = DaggerfallUI.MenuKhaki;
             optionsConfirmButton.Label.Text = GetText("play");
-            optionsConfirmButton.BackgroundColor = new Color(0.0f, 0.5f, 0.0f, 0.4f);
+            optionsConfirmButton.BackgroundColor = DaggerfallUI.MenuMediumSeaGreenOpaque;
             optionsConfirmButton.HorizontalAlignment = HorizontalAlignment.Center;
             optionsConfirmButton.OnMouseClick += OptionsConfirmButton_OnMouseClick;
             optionsConfirmButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.GameSetupPlay);
@@ -509,9 +518,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             // Restart button
             Button restartButton = new Button();
             restartButton.Size = new Vector2(45, 12);
-            restartButton.Label.Text = string.Format("< {0}", GetText("restart"));
+            restartButton.Label.Text = string.Format(" * {0}", GetText("restart"));
             restartButton.Label.ShadowPosition = DaggerfallUI.DaggerfallDefaultShadowPos;
-            restartButton.Label.TextColor = DaggerfallUI.DaggerfallDefaultTextColor;
+            restartButton.Label.TextColor = DaggerfallUI.MenuKhaki;
             restartButton.Label.HorizontalAlignment = HorizontalAlignment.Left;
             restartButton.ToolTip = defaultToolTip;
             restartButton.ToolTipText = GetText("restartInfo");
@@ -529,7 +538,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 ShowModsButton.Size = optionsConfirmButton.Size;
                 ShowModsButton.BackgroundColor = optionsConfirmButton.BackgroundColor;
                 ShowModsButton.Label.TextColor = optionsConfirmButton.Label.TextColor;
-                ShowModsButton.Outline.Enabled = true;
+                ShowModsButton.Outline.Enabled = false;
                 optionsPanel.Components.Add(ShowModsButton);
                 ShowModsButton.OnMouseClick += ModsButton_OnOnMouseBlick;
                 ShowModsButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.GameSetupMods);
@@ -542,7 +551,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             AdvancedSettingsButton.Position = new Vector2(optionsPanel.InteriorWidth - AdvancedSettingsButton.Size.x - 3, optionsConfirmButton.Position.y);
             AdvancedSettingsButton.BackgroundColor = optionsConfirmButton.BackgroundColor;
             AdvancedSettingsButton.Label.TextColor = optionsConfirmButton.Label.TextColor;
-            AdvancedSettingsButton.Outline.Enabled = true;
+            AdvancedSettingsButton.Outline.Enabled = false;
             optionsPanel.Components.Add(AdvancedSettingsButton);
             AdvancedSettingsButton.OnMouseClick += AdvancedSettingsButton_OnOnMouseBlick;
             AdvancedSettingsButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.GameSetupAdvancedSettings);
@@ -567,7 +576,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         //    optionsPanel.Enabled = false;
 
         //    // Add summary panel
-        //    summaryPanel.Outline.Enabled = true;
+        //    summaryPanel.Outline.Enabled = false;
         //    summaryPanel.BackgroundColor = backgroundColor;
         //    summaryPanel.HorizontalAlignment = HorizontalAlignment.Center;
         //    summaryPanel.VerticalAlignment = VerticalAlignment.Middle;
@@ -586,7 +595,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         //    Button summaryConfirmButton = new Button();
         //    summaryConfirmButton.Position = new Vector2(0, 80);
         //    summaryConfirmButton.Size = new Vector2(40, 12);
-        //    summaryConfirmButton.Outline.Enabled = true;
+        //    summaryConfirmButton.Outline.Enabled = false;
         //    summaryConfirmButton.Label.Text = okText;
         //    summaryConfirmButton.BackgroundColor = new Color(0.0f, 0.5f, 0.0f, 0.4f);
         //    summaryConfirmButton.HorizontalAlignment = HorizontalAlignment.Center;
@@ -603,6 +612,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             // Load title background texture
             titleTexture = Resources.Load<Texture2D>(titleScreenFilename);
+            titleTexture.filterMode = FilterMode.Point;
         }
 
         string GetInvalidPathHelpText(DFValidator.ValidationResults validationResults)
@@ -701,7 +711,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 helpLabel.Text = findArena2Tip;
                 browser.ConfirmEnabled = false;
-                browser.BackgroundColor = Color.clear;
+                browser.BackgroundColor = DaggerfallUI.MenuSecondaryDisabledButtonColor;
                 arena2Path = string.Empty;
                 return;
             }

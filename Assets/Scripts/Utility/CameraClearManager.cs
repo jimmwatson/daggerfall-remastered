@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:    
+// Contributors:    Kyle Lee (https://github.com/jimmwatson)
 // 
 // Notes:
 //
@@ -62,6 +62,11 @@ public class CameraClearManager : MonoBehaviour
                 mainCamera.clearFlags = cameraClearExterior;
                 lastInside = isInside;
             }   
+        }
+        
+        float aspectRatioFOV = 2.0f * Mathf.Atan(Mathf.Tan(Camera.VerticalToHorizontalFieldOfView(mainCamera.fieldOfView, mainCamera.aspect) * 0.5f) / mainCamera.aspect);
+        if (mainCamera.fieldOfView != aspectRatioFOV) {
+            mainCamera.fieldOfView = aspectRatioFOV;
         }
     }
 }

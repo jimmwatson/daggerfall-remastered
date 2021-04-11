@@ -1,0 +1,28 @@
+{
+    "SettingsVersion": "1",
+    "Values": {
+        "GeneralSettings": {
+            "OutdoorGroundReflections": "True",
+            "OutdoorSeaReflections": "True",
+            "IndoorBuildingFloorReflections": "True",
+            "IndoorBuildingLowerLevelReflection": "True",
+            "DungeonGroundReflections": "True",
+            "DungeonWaterReflections": "True"
+        },
+        "Features": {
+            "FakeParallaxReflections": "True"
+        },
+        "FloorReflectionTexture": {
+            "width": "256",
+            "height": "256"
+        },
+        "LowerLevelReflectionTexture": {
+            "width": "256",
+            "height": "256"
+        },
+        "ReflectionParameters": {
+            "roughnessMultiplier": "4"
+        }
+    },
+    "$version": "v1"
+}

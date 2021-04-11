@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Lypyl (lypyl@dfworkshop.net)
-// Contributors:    TheLacus
+// Contributors:    TheLacus, Kyle Lee (https://github.com/jimmwatson)
 // 
 // Notes:
 //
@@ -788,20 +788,29 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         {
             try
             {
-                if (ModManager.Instance.mods == null || ModManager.Instance.mods.Count <= 0)
+                string defaultFilePath = Path.Combine(ModManager.Instance.ModDirectory, "Mods.json");
+                string filePath = Path.Combine(ModManager.Instance.ModDataDirectory, "Mods.json");
+                
+                if (File.Exists(defaultFilePath) && !File.Exists(filePath))
                 {
-                    return false;
+                    File.Copy(defaultFilePath, filePath);
                 }
-
-                fsData sdata = null;
-                var result = _serializer.TrySerialize<List<Mod>>(ModManager.Instance.mods, out sdata);
-
-                if (result.Failed)
+                else
                 {
-                    return false;
-                }
+                    if (ModManager.Instance.mods == null || ModManager.Instance.mods.Count <= 0)
+                    {
+                        return false;
+                    }
 
-                File.WriteAllText(Path.Combine(ModManager.Instance.ModDataDirectory, "Mods.json"), fsJsonPrinter.PrettyJson(sdata));
+                    fsData sdata = null;
+                    var result = _serializer.TrySerialize<List<Mod>>(ModManager.Instance.mods, out sdata);
+
+                    if (result.Failed)
+                    {
+                        return false;
+                    }
+                    File.WriteAllText(filePath, fsJsonPrinter.PrettyJson(sdata));
+                }
                 return true;
             }
             catch (Exception ex)
@@ -1120,7 +1129,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 if (File.Exists(destFileName))
                     File.Delete(destFileName);
 
-                File.Move(sourceFileName, destFileName);
+                File.Copy(sourceFileName, destFileName);
                 Debug.LogFormat("Moved {0} to {1}.", sourceFileName, destFileName);
             }
             catch (Exception e)

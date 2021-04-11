@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:    Alyndiar
+// Contributors:    Alyndiar, Kyle Lee (https://github.com/jimmwatson)
 // 
 // Notes:
 //
@@ -108,9 +108,12 @@ namespace DaggerfallWorkshop.Game.UserInterface
         /// </summary>
         public SpellIconCollection()
         {
+            int originalMasterTextureLimit = QualitySettings.masterTextureLimit;
+            QualitySettings.masterTextureLimit = 0;
             LoadSpellIconPacks();
             LoadClassicSpellIcons();
             LoadClassicSpellTargetAndElementIcons();
+            QualitySettings.masterTextureLimit = originalMasterTextureLimit;
         }
 
         #endregion
@@ -306,7 +309,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
                 displayName = Path.GetFileNameWithoutExtension(path),
                 rowCount = 0,
                 iconCount = 0,
-                filterMode = FilterMode.Bilinear,
+                filterMode = FilterMode.Point,
             };
 
             WriteMetadata(pack, path);

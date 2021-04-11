@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:    Lypyl (lypyldf@gmail.com)
+// Contributors:    Lypyl (lypyldf@gmail.com), Kyle Lee (https://github.com/jimmwatson)
 // 
 // Notes:
 //
@@ -263,6 +263,7 @@ namespace DaggerfallWorkshop.Game.Serialization
             byte[] data = File.ReadAllBytes(path);
 
             Texture2D screenshot = new Texture2D(0, 0);
+            screenshot.filterMode = FilterMode.Point;
             if (screenshot.LoadImage(data))
                 return screenshot;
 

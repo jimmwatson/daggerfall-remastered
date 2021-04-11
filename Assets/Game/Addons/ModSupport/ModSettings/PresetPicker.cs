@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: TheLacus
-// Contributors:    
+// Contributors:    Kyle Lee (https://github.com/jimmwatson)
 // 
 // Notes:
 //
@@ -32,6 +32,9 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
             readonly TextBox descriptionTextBox = new TextBox();
             readonly TextBox authorTextBox = new TextBox();
             readonly Action<string, string, string> createPresetCallback;
+            
+            private Texture2D TitleTexture;
+            private const string TitleScreenFilename = DaggerfallUI.MenuBackgroundPath3;
 
             public PresetCreator(IUserInterfaceManager uiManager, Action<string, string, string> createPresetCallback)
                 : base(uiManager)
@@ -44,13 +47,19 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
 
             protected override void Setup()
             {
+                // Load title background texture
+                TitleTexture = Resources.Load<Texture2D>(TitleScreenFilename);
+                TitleTexture.filterMode = DaggerfallUI.Instance.GlobalFilterMode;
+                ParentPanel.BackgroundTexture = TitleTexture;
+                ParentPanel.BackgroundTextureLayout = BackgroundLayout.StretchToFill;
+                
                 ParentPanel.BackgroundColor = Color.clear;
                 Panel mainPanel = new Panel();
                 mainPanel.Size = new Vector2(windowWidth, 120 + 10);
                 mainPanel.HorizontalAlignment = HorizontalAlignment.Center;
                 mainPanel.VerticalAlignment = VerticalAlignment.Middle;
-                mainPanel.BackgroundColor = new Color(0, 0, 0, 0.7f);
-                mainPanel.Outline.Enabled = true;
+                mainPanel.BackgroundColor = DaggerfallUI.MenuBackgroundColor;
+                mainPanel.Outline.Enabled = false;
                 NativePanel.Components.Add(mainPanel);
 
                 mainPanel.Components.Add(MakeCancelButton(uiManager, "presets"));
@@ -84,6 +93,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
                 textLabel.VerticalAlignment = VerticalAlignment.Middle;
                 textLabel.TextScale = 0.7f;
                 textLabel.Text = text;
+                textLabel.TextColor = DaggerfallUI.MenuKhaki;
                 textLabel.ShadowColor = Color.clear;
                 panel.Components.Add(textLabel);
 
@@ -92,7 +102,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
                 textBox.HorizontalAlignment = HorizontalAlignment.Right;
                 textBox.VerticalAlignment = VerticalAlignment.Middle;
                 textBox.UseFocus = true;
-                textBox.Outline.Enabled = true;
+                textBox.Outline.Enabled = false;
+                textBox.DefaultTextColor = DaggerfallUI.MenuKhaki;
                 panel.Components.Add(textBox);
 
                 return panel;
@@ -118,7 +129,15 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
 
         #endregion
 
+        #region UI Textures
+
+        Texture2D titleTexture;
+
+        #endregion
+
         #region Fields
+
+        const string titleScreenFilename = DaggerfallUI.MenuBackgroundPath4;
 
         const float windowWidth = 150;
 
@@ -138,13 +157,13 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
         readonly Button saveButton = new Button();
         readonly Button deleteButton = new Button();
 
-        readonly Color mainBackgroundColor = new Color(0, 0, 0, 0.7f);
-        readonly Color infoBackgroundColor = new Color(0.0f, 0.5f, 0.0f, 0.4f);
+        readonly Color mainBackgroundColor = DaggerfallUI.MenuBackgroundColor;
+        readonly Color infoBackgroundColor = DaggerfallUI.MenuSectionTitleShadow;
         readonly Color titleColor = Color.gray;
-        readonly Color selectedTitleColor = new Color(0.0f, 0.5f, 0.0f, 0.4f);
-        readonly Color warningColor = new Color(1, 0, 0, 0.4f);
-        readonly Color enabledButtonColor = new Color(0.0f, 0.5f, 0.0f, 0.4f);
-        readonly Color disabledButtonColor = new Color(0.5f, 0.5f, 0.5f, 0.4f);
+        readonly Color selectedTitleColor = DaggerfallUI.MenuSectionTitleShadow;
+        readonly Color warningColor = DaggerfallUI.MenuFireBrickOpaque;
+        readonly Color enabledButtonColor = DaggerfallUI.MenuSectionTitleShadow;
+        readonly Color disabledButtonColor = DaggerfallUI.MenuDisabledButtonColor;
 
         bool writeToDiskFlag = false;
 
@@ -176,6 +195,12 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
 
         protected override void Setup()
         {
+            // Load title background texture
+            titleTexture = Resources.Load<Texture2D>(titleScreenFilename);
+            titleTexture.filterMode = DaggerfallUI.Instance.GlobalFilterMode;
+            ParentPanel.BackgroundTexture = titleTexture;
+            ParentPanel.BackgroundTextureLayout = BackgroundLayout.StretchToFill;
+
             ParentPanel.BackgroundColor = Color.clear;
 
             var mainPanel = new Panel();
@@ -183,7 +208,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
             mainPanel.HorizontalAlignment = HorizontalAlignment.Center;
             mainPanel.VerticalAlignment = VerticalAlignment.Middle;
             mainPanel.BackgroundColor = mainBackgroundColor;
-            mainPanel.Outline.Enabled = true;
+            mainPanel.Outline.Enabled = false;
             NativePanel.Components.Add(mainPanel);
 
             mainPanel.Components.Add(MakeTitleLabel("presets"));
@@ -191,7 +216,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
 
             listBox.Position = new Vector2(5, 12);
             listBox.Size = new Vector2((150 / 3 * 2) - 10, 80);
-            listBox.BackgroundColor = new Color(0.1f, 0.1f, 0.1f, 0.5f);
+            listBox.BackgroundColor = DaggerfallUI.MenuSecondaryBackgroundColor;
             listBox.OnScroll += () => scrollBar.ScrollIndex = listBox.ScrollIndex;
             listBox.OnSelectItem += ListBox_OnSelectItem;
             mainPanel.Components.Add(listBox);
@@ -353,9 +378,12 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
         {
             Preset preset = SelectedPreset;
             descriptionLabel.Text = preset.Description;
+            descriptionLabel.TextColor = DaggerfallUI.MenuKhaki;
             authorLabel.Text = !string.IsNullOrEmpty(preset.Author) ? string.Format("{0}: {1}", ModManager.GetText("author"), preset.Author) : string.Empty;
+            authorLabel.TextColor = DaggerfallUI.MenuKhaki;
             versionLabel.Text = settings.IsCompatible(preset) ?
                 string.Empty : string.Format("{0} ({1}/{2})", ModManager.GetText("versionMismatch"), preset.SettingsVersion, settings.Version);
+            versionLabel.TextColor = DaggerfallUI.MenuKhaki;
 
             ToggleButtons(true, newPresetButton, loadButton);
             ToggleButtons(preset.IsLocal, saveButton, deleteButton);
@@ -435,10 +463,12 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
         {
             var titleLabel = new TextLabel();
             titleLabel.Size = new Vector2(60, 12);
-            titleLabel.Position = new Vector2(0, 5);
+            titleLabel.Position = new Vector2(0, 4);
             titleLabel.HorizontalAlignment = HorizontalAlignment.Center;
             titleLabel.HorizontalTextAlignment = TextLabel.HorizontalTextAlignmentSetting.Center;
             titleLabel.Text = ModManager.GetText(labelKey);
+            titleLabel.TextColor = DaggerfallUI.MenuSectionTitleColor;
+            titleLabel.ShadowColor = DaggerfallUI.MenuSectionTitleShadow;
             return titleLabel;
         }
 
@@ -447,7 +477,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
             var cancelButton = new Button();
             cancelButton.Size = new Vector2(20, 10);
             cancelButton.Position = new Vector2(0, 0);
-            cancelButton.Label.Text = string.Format("< {0}", ModManager.GetText(labelKey));
+            cancelButton.Label.Text = string.Format("     < {0}", ModManager.GetText(labelKey));
             cancelButton.Label.Font = DaggerfallUI.Instance.Font3;
             cancelButton.Label.ShadowColor = Color.clear;
             cancelButton.Label.TextColor = Color.grey;
@@ -464,9 +494,10 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
             button.Size = new Vector2(40, 12);
             button.Position = position;
             button.HorizontalAlignment = HorizontalAlignment.Center;
-            button.Outline.Enabled = true;
-            button.BackgroundColor = new Color(0.0f, 0.5f, 0.0f, 0.4f);
+            button.Outline.Enabled = false;
+            button.BackgroundColor = DaggerfallUI.MenuSectionTitleShadow;
             button.Label.Text = ModManager.GetText(labelKey);
+            button.Label.TextColor = DaggerfallUI.MenuKhaki;
             if (toolTip != null)
             {
                 button.Label.ToolTip = toolTip;

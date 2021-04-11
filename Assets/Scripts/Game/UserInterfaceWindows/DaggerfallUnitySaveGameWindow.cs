@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:    
+// Contributors:    Kyle Lee (https://github.com/jimmwatson)
 // 
 // Notes:
 //
@@ -53,13 +53,13 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         Button switchCharButton = new Button();
         Button switchClassicButton = new Button();
 
-        Color mainPanelBackgroundColor = new Color(0.0f, 0.0f, 0.0f, 1.0f);
-        Color namePanelBackgroundColor = new Color(0.2f, 0.2f, 0.2f, 1.0f);
-        Color saveButtonBackgroundColor = new Color(0.0f, 0.5f, 0.0f, 0.4f);
-        Color cancelButtonBackgroundColor = new Color(0.7f, 0.0f, 0.0f, 0.4f);
-        Color savesListBackgroundColor = new Color(0.1f, 0.1f, 0.1f, 0.4f);
-        Color savesListTextColor = new Color(0.8f, 0.8f, 0.8f, 1.0f);
-        Color saveFolderColor = new Color(0.7f, 0.7f, 0.7f, 0.5f);
+        Color mainPanelBackgroundColor = DaggerfallUI.MenuTertiaryBackgroundColor;
+        Color namePanelBackgroundColor = DaggerfallUI.MenuBackButtonColor;
+        Color saveButtonBackgroundColor = DaggerfallUI.MenuMediumSeaGreenOpaque;
+        Color cancelButtonBackgroundColor = DaggerfallUI.MenuFireBrickOpaque;
+        Color savesListBackgroundColor = DaggerfallUI.MenuSecondaryBackgroundColor;
+        Color savesListTextColor = DaggerfallUI.MenuSecondaryTextColor;
+        Color saveFolderColor = DaggerfallUI.MenuSaveFolderColor;
         VerticalScrollBar savesScroller = new VerticalScrollBar();
 
         Modes mode = Modes.SaveGame;
@@ -109,20 +109,22 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             mainPanel.HorizontalAlignment = HorizontalAlignment.Center;
             mainPanel.VerticalAlignment = VerticalAlignment.Middle;
             mainPanel.Size = mainPanelSize;
-            mainPanel.Outline.Enabled = true;
+            mainPanel.Outline.Enabled = false;
+            mainPanel.Outline.Color = Color.black;
             SetBackground(mainPanel, mainPanelBackgroundColor, "mainPanelBackgroundColor");
             NativePanel.Components.Add(mainPanel);
 
             // Prompt
             promptLabel.ShadowPosition = Vector2.zero;
             promptLabel.Position = new Vector2(4, 4);
+            promptLabel.TextColor = DaggerfallUI.MenuKhaki;
             mainPanel.Components.Add(promptLabel);
 
             // Name panel
             Panel namePanel = new Panel();
             namePanel.Position = new Vector2(4, 12);
             namePanel.Size = new Vector2(272, 9);
-            namePanel.Outline.Enabled = true;
+            namePanel.Outline.Enabled = false;
             SetBackground(namePanel, namePanelBackgroundColor, "namePanelBackgroundColor");
             mainPanel.Components.Add(namePanel);
 
@@ -136,7 +138,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             Panel savesPanel = new Panel();
             savesPanel.Position = new Vector2(4, 25);
             savesPanel.Size = new Vector2(100, 141);
-            savesPanel.Outline.Enabled = true;
+            savesPanel.Outline.Enabled = false;
             mainPanel.Components.Add(savesPanel);
 
             // Save list
@@ -162,20 +164,23 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             goButton.Position = new Vector2(108, 150);
             goButton.Size = new Vector2(40, 16);
             goButton.Label.ShadowColor = Color.black;
+            goButton.Label.TextColor = DaggerfallUI.MenuKhaki;
             SetBackground(goButton, saveButtonBackgroundColor, "saveButtonBackgroundColor");
-            goButton.Outline.Enabled = true;
+            goButton.Outline.Enabled = false;
             goButton.OnMouseClick += SaveLoadEventHandler;
+            goButton.BackgroundColor = DaggerfallUI.MenuMediumSeaGreenOpaque;
             mainPanel.Components.Add(goButton);
 
             // Switch to classic save window button
             switchClassicButton.Position = new Vector2(172, 150);
             switchClassicButton.Size = new Vector2(40, 16);
             switchClassicButton.Label.Text = TextManager.Instance.GetLocalizedText("classicSave");
-            //switchClassicButton.Label.TextColor = new Color(0.6f, 0.3f, 0.6f);
+            switchClassicButton.Label.TextColor = DaggerfallUI.MenuKhaki;
             switchClassicButton.Label.ShadowColor = Color.black;
             SetBackground(switchClassicButton, new Color(0.2f, 0.2f, 0), "switchClassicButtonBackgroundColor");
-            switchClassicButton.Outline.Enabled = true;
+            switchClassicButton.Outline.Enabled = false;
             switchClassicButton.OnMouseClick += SwitchClassicButton_OnMouseClick;
+            switchClassicButton.BackgroundColor = DaggerfallUI.MenuKhakiOpaque;
             mainPanel.Components.Add(switchClassicButton);
 
             // Cancel button
@@ -183,9 +188,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             cancelButton.Position = new Vector2(236, 150);
             cancelButton.Size = new Vector2(40, 16);
             cancelButton.Label.Text = TextManager.Instance.GetLocalizedText("cancel");
+            cancelButton.Label.TextColor = DaggerfallUI.MenuKhaki;
             cancelButton.Label.ShadowColor = Color.black;
             SetBackground(cancelButton, cancelButtonBackgroundColor, "cancelButtonBackgroundColor");
-            cancelButton.Outline.Enabled = true;
+            cancelButton.Outline.Enabled = false;
             cancelButton.OnMouseClick += CancelButton_OnMouseClick;
             mainPanel.Components.Add(cancelButton);
 
@@ -194,7 +200,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             screenshotPanel.Size = new Vector2(168, 95);
             screenshotPanel.BackgroundTextureLayout = BackgroundLayout.ScaleToFit;
             SetBackground(screenshotPanel, savesListBackgroundColor, "screenshotPanelBackgroundColor");
-            screenshotPanel.Outline.Enabled = true;
+            screenshotPanel.Outline.Enabled = false;
             mainPanel.Components.Add(screenshotPanel);
 
             // Info panel
@@ -228,10 +234,12 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             saveTimeLabel.ShadowPosition = Vector2.zero;
             saveTimeLabel.HorizontalAlignment = HorizontalAlignment.Center;
             saveTimeLabel.Position = new Vector2(0, 0);
+            saveTimeLabel.TextColor = DaggerfallUI.MenuKhaki;
             infoPanel.Components.Add(saveTimeLabel);
             gameTimeLabel.ShadowPosition = Vector2.zero;
             gameTimeLabel.HorizontalAlignment = HorizontalAlignment.Center;
             gameTimeLabel.Position = new Vector2(0, 9);
+            gameTimeLabel.TextColor = DaggerfallUI.MenuKhaki;
             infoPanel.Components.Add(gameTimeLabel);
 
             // Rename save button
@@ -239,6 +247,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             renameSaveButton.Size = new Vector2(48, 8);
             renameSaveButton.Label.Text = TextManager.Instance.GetLocalizedText("renameSave");
             renameSaveButton.Label.ShadowColor = Color.black;
+            renameSaveButton.Label.TextColor = DaggerfallUI.MenuKhaki;
             SetBackground(renameSaveButton, namePanelBackgroundColor, "renameSaveButtonBackgroundColor");
             renameSaveButton.Outline.Enabled = false;
             renameSaveButton.OnMouseClick += RenameSaveButton_OnMouseClick;
@@ -256,6 +265,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             deleteSaveButton.Position = new Vector2(51, 132);
             deleteSaveButton.Size = new Vector2(48, 8);
             deleteSaveButton.Label.Text = TextManager.Instance.GetLocalizedText("deleteSave");
+            deleteSaveButton.Label.TextColor = DaggerfallUI.MenuKhaki;
             deleteSaveButton.Label.ShadowColor = Color.black;
             SetBackground(deleteSaveButton, namePanelBackgroundColor, "deleteSaveButtonBackgroundColor");
             deleteSaveButton.Outline.Enabled = false;
@@ -266,6 +276,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             switchCharButton.Position = new Vector2(216, 2);
             switchCharButton.Size = new Vector2(60, 8);
             switchCharButton.Label.Text = TextManager.Instance.GetLocalizedText("switchChar");
+            switchCharButton.Label.TextColor = DaggerfallUI.MenuKhaki;
             switchCharButton.Label.ShadowColor = Color.black;
             SetBackground(switchCharButton, saveButtonBackgroundColor, "switchCharButtonBackgroundColor");
             switchCharButton.OnMouseClick += SwitchCharButton_OnMouseClick;

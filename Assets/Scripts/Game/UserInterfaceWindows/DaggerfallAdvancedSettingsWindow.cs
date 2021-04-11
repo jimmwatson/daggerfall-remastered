@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: TheLacus
-// Contributors:    
+// Contributors:    Kyle Lee (https://github.com/jimmwatson)
 // 
 // Notes:
 //
@@ -31,7 +31,15 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         #endregion
 
+        #region UI Textures
+
+        Texture2D titleTexture;
+
+        #endregion
+
         #region Fields
+
+        const string titleScreenFilename = DaggerfallUI.MenuBackgroundPath6;
 
         enum InteractionModeIconModes { none, minimal, large, classic, colour, monochrome, classicXhair, colourXhair };
         enum IconsPositioningSchemes { classic, medium, small, smalldeckleft, smalldeckright, smallvertleft, smallvertright, smallhorzbottom };
@@ -58,9 +66,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         Panel bar = new Panel();
 
         // Colors
-        Color backgroundColor           = new Color(0, 0, 0, 0.7f);
-        Color closeButtonColor          = new Color(0.2f, 0.2f, 0.2f, 0.6f);
-        Color itemColor                 = new Color(0.0f, 0.8f, 0.0f, 1.0f);
+        Color backgroundColor           = DaggerfallUI.MenuSecondaryBackgroundColor;
+        Color closeButtonColor          = DaggerfallUI.MenuBackButtonColor;
+        Color itemColor                 = DaggerfallUI.MenuMediumSeaGreen;
         //Color unselectedTextColor       = new Color(0.6f, 0.6f, 0.6f, 1f);
         //Color selectedTextColor         = new Color32(243, 239, 44, 255);
         //Color listBoxBackgroundColor    = new Color(0.1f, 0.1f, 0.1f, 0.5f);
@@ -170,6 +178,12 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         /// </summary>
         protected override void Setup()
         {
+            // Load title background texture
+            titleTexture = Resources.Load<Texture2D>(titleScreenFilename);
+            titleTexture.filterMode = DaggerfallUI.Instance.GlobalFilterMode;
+            ParentPanel.BackgroundTexture = titleTexture;
+            ParentPanel.BackgroundTextureLayout = BackgroundLayout.StretchToFill;
+
             AllowCancel = false;
             ParentPanel.BackgroundColor = Color.clear;
 
@@ -179,7 +193,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             dfAudioSource = gameObject.AddComponent<DaggerfallAudioSource>();
 
             // Pages selection top bar
-            bar.Outline.Enabled = true;
+            bar.Outline.Enabled = false;
             bar.BackgroundColor = backgroundColor;
             bar.HorizontalAlignment = HorizontalAlignment.Center;
             bar.Position = new Vector2(0, topY);
@@ -194,9 +208,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             closeButton.Size = new Vector2(25, 9);
             closeButton.HorizontalAlignment = HorizontalAlignment.Center;
             closeButton.VerticalAlignment = VerticalAlignment.Bottom;
-            closeButton.BackgroundColor = closeButtonColor;
-            closeButton.Outline.Enabled = true;
+            closeButton.BackgroundColor = Color.clear;
+            closeButton.Outline.Enabled = false;
             closeButton.Label.Text = closeButtonText;
+            closeButton.Label.TextColor = DaggerfallUI.MenuKhaki;
             closeButton.OnMouseClick += CloseButton_OnMouseClick;
             closeButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.GameSetupClose);
             NativePanel.Components.Add(closeButton);
@@ -502,7 +517,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             Panel panel = new Panel();
             panel.Name = title;
-            panel.Outline.Enabled = true;
+            panel.Outline.Enabled = false;
             panel.BackgroundColor = backgroundColor;
             panel.HorizontalAlignment = HorizontalAlignment.Center;
             panel.Position = new Vector2(0, topY + bar.Size.y);
@@ -516,6 +531,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             TextLabel textLabel = new TextLabel(titleFont);
             textLabel.Text = title;
+            textLabel.TextColor = DaggerfallUI.MenuKhaki;
             textLabel.Position = new Vector2(0, 2);
             textLabel.HorizontalAlignment = HorizontalAlignment.Center;
             panel.Components.Add(textLabel);
@@ -591,6 +607,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             TextLabel textLabel = new TextLabel();
             textLabel.Text = GetText(titleKey);
+            textLabel.TextColor = DaggerfallUI.MenuKhaki;
             textLabel.Position = new Vector2(0, y);
             textLabel.HorizontalAlignment = HorizontalAlignment.Center;
             panel.Components.Add(textLabel);
@@ -679,6 +696,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             AddLabel(panel, key);
             y += 6;
             HorizontalSlider slider = DaggerfallUI.AddSlider(new Vector2(0, y), setIndicator, itemTextScale, panel);
+            slider.BackgroundColor = DaggerfallUI.MenuKhakiOpaque;
+            slider.TintColor = DaggerfallUI.MenuKhaki;
 
             y += itemSpacing;
             return slider;

@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Lypyl (lypyl@dfworkshop.net)
-// Contributors:    TheLacus
+// Contributors:    TheLacus, Kyle Lee (https://github.com/jimmwatson)
 // 
 // Notes:
 //
@@ -36,7 +36,15 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         public bool enabled;
     }
 
+    #region UI Textures
+
+    Texture2D titleTexture;
+
+    #endregion
+
     #region Fields
+
+    const string titleScreenFilename = DaggerfallUI.MenuBackgroundPath2;
 
     DaggerfallMessageBox ModDescriptionMessageBox;
 
@@ -66,12 +74,12 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
     readonly TextLabel modDFTFUVersionLabel      = new TextLabel();
     readonly TextLabel modsFound                 = new TextLabel();
 
-    readonly Color backgroundColor = new Color(0, 0, 0, 0.7f);
-    readonly Color unselectedTextColor = new Color(0.6f, 0.6f, 0.6f, 1f);
-    readonly Color selectedTextColor = new Color(0.0f, 0.8f, 0.0f, 1.0f);
-    readonly Color textColor = new Color(0.0f, 0.5f, 0.0f, 0.4f);
-    readonly Color disabledModTextColor = new Color(0.35f, 0.35f, 0.35f, 1);
-    readonly Color disabledButtonBackground = new Color(0.35f, 0.35f, 0.35f, 0.4f);
+    readonly Color backgroundColor = DaggerfallUI.MenuBackgroundColor;
+    readonly Color unselectedTextColor = DaggerfallUI.MenuDefaultTextColor;
+    readonly Color selectedTextColor = DaggerfallUI.MenuMediumSeaGreen;
+    readonly Color textColor = DaggerfallUI.MenuMediumSeaGreenOpaque;
+    readonly Color disabledModTextColor = DaggerfallUI.MenuDisabledTextColor;
+    readonly Color disabledButtonBackground = DaggerfallUI.MenuSecondaryDisabledButtonColor;
 
     Stage currentStage = Stage.None;
     bool moveNextStage = false;
@@ -94,9 +102,15 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
     protected override void Setup()
     {
+        // Load title background texture
+        titleTexture = Resources.Load<Texture2D>(titleScreenFilename);
+        titleTexture.filterMode = DaggerfallUI.Instance.GlobalFilterMode;
+        ParentPanel.BackgroundTexture = titleTexture;
+        ParentPanel.BackgroundTextureLayout = BackgroundLayout.StretchToFill;
+
         ParentPanel.BackgroundColor = Color.clear;
 
-        ModListPanel.Outline.Enabled = true;
+        ModListPanel.Outline.Enabled = false;
         ModListPanel.BackgroundColor = backgroundColor;
         ModListPanel.HorizontalAlignment = HorizontalAlignment.Left;
         ModListPanel.VerticalAlignment = VerticalAlignment.Middle;
@@ -106,9 +120,10 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         modsFound.HorizontalAlignment = HorizontalAlignment.Center;
         modsFound.Position = new Vector2(10, 20);
         modsFound.Text = string.Format("{0}: ", ModManager.GetText("modsFound"));
+        modsFound.TextColor = DaggerfallUI.MenuKhaki;
         ModListPanel.Components.Add(modsFound);
 
-        modList.BackgroundColor = new Color(0.1f, 0.1f, 0.1f, 0.5f);
+        modList.BackgroundColor = DaggerfallUI.MenuSecondaryBackgroundColor;
         modList.Size = new Vector2(110, 115);
         modList.HorizontalAlignment = HorizontalAlignment.Center;
         modList.VerticalAlignment = VerticalAlignment.Middle;
@@ -135,7 +150,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         modList.ScrollToSelected();
 
         backButton.Size = new Vector2(45, 12);
-        backButton.Label.Text = string.Format("< {0}", ModManager.GetText("backToOptions"));
+        backButton.Label.Text = string.Format(" < {0}", ModManager.GetText("backToOptions"));
         backButton.Label.ShadowPosition = Vector2.zero;
         backButton.Label.TextColor = Color.gray;
         backButton.ToolTip = defaultToolTip;
@@ -148,42 +163,46 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
         increaseLoadOrderButton.Size = new Vector2(40, 12);
         increaseLoadOrderButton.Position = new Vector2(62, 150);
-        increaseLoadOrderButton.Outline.Enabled = true;
+        increaseLoadOrderButton.Outline.Enabled = false;
         increaseLoadOrderButton.BackgroundColor = textColor;
         increaseLoadOrderButton.Label.Text = ModManager.GetText("increase");
+        increaseLoadOrderButton.Label.TextColor = DaggerfallUI.MenuKhaki;
         increaseLoadOrderButton.OnMouseClick += IncreaseLoadOrderButton_OnMouseClick;
         ModListPanel.Components.Add(increaseLoadOrderButton);
 
         decreaseLoadOrderButton.Size = new Vector2(40, 12);
         decreaseLoadOrderButton.Position = new Vector2(21, 150);
-        decreaseLoadOrderButton.Outline.Enabled = true;
+        decreaseLoadOrderButton.Outline.Enabled = false;
         decreaseLoadOrderButton.BackgroundColor = textColor;
         decreaseLoadOrderButton.Label.Text = ModManager.GetText("lower");
+        decreaseLoadOrderButton.Label.TextColor = DaggerfallUI.MenuKhaki;
         decreaseLoadOrderButton.OnMouseClick += DecreaseLoadOrderButton_OnMouseClick;
         ModListPanel.Components.Add(decreaseLoadOrderButton);
 
         enableAllButton.Size = new Vector2(40, 12);
         enableAllButton.Position = new Vector2(21, 163);
-        enableAllButton.Outline.Enabled = true;
+        enableAllButton.Outline.Enabled = false;
         enableAllButton.BackgroundColor = textColor;
         enableAllButton.VerticalAlignment = VerticalAlignment.Bottom;
         enableAllButton.Label.Text = ModManager.GetText("enableAll");
+        enableAllButton.Label.TextColor = DaggerfallUI.MenuKhaki;
         enableAllButton.ToolTipText = ModManager.GetText("enableAllInfo");
         enableAllButton.OnMouseClick += EnableAllButton_OnMouseClick;
         ModListPanel.Components.Add(enableAllButton);
 
         disableAllButton.Size = new Vector2(40, 12);
         disableAllButton.Position = new Vector2(62, 163);
-        disableAllButton.Outline.Enabled = true;
+        disableAllButton.Outline.Enabled = false;
         disableAllButton.BackgroundColor = textColor;
         disableAllButton.VerticalAlignment = VerticalAlignment.Bottom;
         disableAllButton.Label.Text = ModManager.GetText("disableAll");
+        disableAllButton.Label.TextColor = DaggerfallUI.MenuKhaki;
         disableAllButton.ToolTipText = ModManager.GetText("disableAllInfo");
         disableAllButton.OnMouseClick += DisableAllButton_OnMouseClick;
         ModListPanel.Components.Add(disableAllButton);
 
         //Add main mod panel
-        ModPanel.Outline.Enabled = true;
+        ModPanel.Outline.Enabled = false;
         ModPanel.BackgroundColor = backgroundColor;
         ModPanel.HorizontalAlignment = HorizontalAlignment.Right;
         ModPanel.VerticalAlignment = VerticalAlignment.Middle;
@@ -201,55 +220,64 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         ModPanel.Components.Add(modEnabledCheckBox);
 
         modLoadPriorityLabel.Position = new Vector2(60, 25);
+        modLoadPriorityLabel.TextColor = DaggerfallUI.MenuKhaki;
         ModPanel.Components.Add(modLoadPriorityLabel);
 
         modTitleLabel.Position = new Vector2(0, 5);
         modTitleLabel.HorizontalAlignment = HorizontalAlignment.Center;
         modTitleLabel.MaxCharacters = 40;
+        modTitleLabel.TextColor = DaggerfallUI.MenuKhaki;
         ModPanel.Components.Add(modTitleLabel);
 
         modVersionLabel.Position = new Vector2(5, 40);
         modVersionLabel.MaxCharacters = 40;
+        modVersionLabel.TextColor = DaggerfallUI.MenuKhaki;
         ModPanel.Components.Add(modVersionLabel);
 
         modAuthorLabel.Position = new Vector2(5, 50);
         modAuthorLabel.MaxCharacters = 40;
+        modAuthorLabel.TextColor = DaggerfallUI.MenuKhaki;
         ModPanel.Components.Add(modAuthorLabel);
 
         modAuthorContactLabel.Position = new Vector2(5, 60);
         modAuthorContactLabel.MaxCharacters = 40;
+        modAuthorContactLabel.TextColor = DaggerfallUI.MenuKhaki;
         ModPanel.Components.Add(modAuthorContactLabel);
 
         modDFTFUVersionLabel.Position = new Vector2(5, 70);
         modDFTFUVersionLabel.MaxCharacters = 40;
+        modDFTFUVersionLabel.TextColor = DaggerfallUI.MenuKhaki;
         ModPanel.Components.Add(modDFTFUVersionLabel);
 
         showModDescriptionButton.Position = new Vector2(5, 95);
         showModDescriptionButton.Size = new Vector2(75, 12);
         showModDescriptionButton.HorizontalAlignment = HorizontalAlignment.Center;
         showModDescriptionButton.Label.Text = ModManager.GetText("modDescription");
+        showModDescriptionButton.Label.TextColor = DaggerfallUI.MenuKhaki;
         showModDescriptionButton.BackgroundColor = textColor;
-        showModDescriptionButton.Outline.Enabled = true;
+        showModDescriptionButton.Outline.Enabled = false;
         showModDescriptionButton.OnMouseClick += ShowModDescriptionPopUp_OnMouseClick;
         ModPanel.Components.Add(showModDescriptionButton);
 
         refreshButton.Size = new Vector2(50, 12);
         refreshButton.Position = new Vector2(5, 139);
-        refreshButton.Outline.Enabled = true;
+        refreshButton.Outline.Enabled = false;
         refreshButton.BackgroundColor = textColor;
         refreshButton.HorizontalAlignment = HorizontalAlignment.Center;
         refreshButton.Label.Text = ModManager.GetText("refresh");
+        refreshButton.Label.TextColor = DaggerfallUI.MenuKhaki;
         refreshButton.Label.ToolTipText = ModManager.GetText("RrefreshInfo");
         refreshButton.OnMouseClick += RefreshButton_OnMouseClick;
         refreshButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.GameSetupRefresh);
         ModPanel.Components.Add(refreshButton);
 
-        saveAndCloseButton.Size = new Vector2(70, 12);
-        saveAndCloseButton.Outline.Enabled = true;
+        saveAndCloseButton.Size = new Vector2(75, 12);
+        saveAndCloseButton.Outline.Enabled = false;
         saveAndCloseButton.BackgroundColor = textColor;
         saveAndCloseButton.VerticalAlignment = VerticalAlignment.Bottom;
         saveAndCloseButton.HorizontalAlignment = HorizontalAlignment.Center;
         saveAndCloseButton.Label.Text = ModManager.GetText("saveClose");
+        saveAndCloseButton.Label.TextColor = DaggerfallUI.MenuKhaki;
         saveAndCloseButton.Label.ToolTipText = ModManager.GetText("saveCloseInfo");
         saveAndCloseButton.OnMouseClick += SaveAndCloseButton_OnMouseClick;
         saveAndCloseButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.GameSetupSaveAndClose);
@@ -257,20 +285,22 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
         extractFilesButton.Size = new Vector2(60, 12);
         extractFilesButton.Position = new Vector2(5, 117);
-        extractFilesButton.Outline.Enabled = true;
+        extractFilesButton.Outline.Enabled = false;
         extractFilesButton.BackgroundColor = textColor;
         extractFilesButton.HorizontalAlignment = HorizontalAlignment.Center;
         extractFilesButton.Label.Text = ModManager.GetText("extractText");
+        extractFilesButton.Label.TextColor = DaggerfallUI.MenuKhaki;
         extractFilesButton.Label.ToolTipText = ModManager.GetText("extractTextInfo");
         extractFilesButton.OnMouseClick += ExtractFilesButton_OnMouseClick;
         ModPanel.Components.Add(extractFilesButton);
 
         modSettingsButton.Size = new Vector2(60, 12);
         modSettingsButton.Position = new Vector2(5, 103);
-        modSettingsButton.Outline.Enabled = true;
+        modSettingsButton.Outline.Enabled = false;
         modSettingsButton.BackgroundColor = textColor;
         modSettingsButton.HorizontalAlignment = HorizontalAlignment.Center;
         modSettingsButton.Label.Text = ModManager.GetText("settings");
+        modSettingsButton.Label.TextColor = DaggerfallUI.MenuKhaki;
         modSettingsButton.Label.ToolTipText = ModManager.GetText("settingsInfo");
         modSettingsButton.OnMouseClick += ModSettingsButton_OnMouseClick;
         modSettingsButton.Enabled = false;
@@ -375,7 +405,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
         Mod mod = ModManager.Instance.GetMod(ms.modInfo.ModTitle);
 
-        modDFTFUVersionLabel.TextColor = mod.IsGameVersionSatisfied() == false ? Color.red : DaggerfallUI.DaggerfallDefaultTextColor;
+        modDFTFUVersionLabel.TextColor = mod.IsGameVersionSatisfied() == false ? Color.red : DaggerfallUI.MenuKhaki;
 
 #if UNITY_EDITOR
         if (mod.IsVirtual)

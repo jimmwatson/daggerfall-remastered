@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: jefetienne
-// Contributors:
+// Contributors:    Kyle Lee (https://github.com/jimmwatson)
 //
 // Notes:
 //
@@ -117,7 +117,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             mainPanel.HorizontalAlignment = HorizontalAlignment.Center;
             mainPanel.VerticalAlignment = VerticalAlignment.Middle;
             mainPanel.Size = mainPanelSize;
-            mainPanel.Outline.Enabled = true;
+            mainPanel.Outline.Enabled = false;
             SetBackground(mainPanel, mainPanelBackgroundColor, "joystickControlsMainPanelBackgroundColor");
             NativePanel.Components.Add(mainPanel);
 

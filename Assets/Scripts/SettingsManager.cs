@@ -3,7 +3,7 @@
 // Web Site:        http://www.dfworkshop.net
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
-// Original Author: Gavin Clayton (interkarma@dfworkshop.net)
+// Original Author: Gavin Clayton (interkarma@dfworkshop.net), Kyle Lee (https://github.com/jimmwatson)
 // Contributors:    
 // 
 // Notes:
@@ -554,7 +554,7 @@ namespace DaggerfallWorkshop
 
         string GetData(string sectionName, string valueName)
         {
-            try
+            /*try
             {
                 if (userIniData != null)
                     return userIniData[sectionName][valueName];
@@ -562,12 +562,12 @@ namespace DaggerfallWorkshop
                     throw new Exception();
             }
             catch
-            {
+            {*/
                 if (defaultIniData != null)
                     return defaultIniData[sectionName][valueName];
                 else
                     throw new Exception("GetData() could not find settings.ini or defaults.ini.");
-            }
+            //}
         }
 
         void SetData(string sectionName, string valueName, string valueData)

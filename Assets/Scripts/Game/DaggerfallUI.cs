@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:
+// Contributors:    Kyle Lee (https://github.com/jimmwatson)
 //
 // Notes:
 //
@@ -62,6 +62,41 @@ namespace DaggerfallWorkshop.Game
         public static Color DaggerfallPrisonDaysUntilFreedomShadowColor = new Color32(48, 36, 20, 255);
         public static Color DaggerfallInfoPanelTextColor = new Color32(250, 250, 220, 255);
         public static Vector2 DaggerfallDefaultShadowPos = Vector2.one;
+
+        public static Color MenuKhaki = new Color(0.9f, 0.9f, 0.5f, 1.0f);
+        public static Color MenuKhakiOpaque = new Color(0.9f, 0.9f, 0.5f, 0.25f);
+        public static Color MenuFireBrick = new Color(0.7f, 0.1f, 0.1f, 1.0f);
+        public static Color MenuFireBrickOpaque = new Color(0.7f, 0.1f, 0.1f, 0.25f);
+        public static Color MenuMediumSeaGreen = new Color(0.2f, 0.7f, 0.4f, 1.0f);
+        public static Color MenuMediumSeaGreenOpaque = new Color(0.2f, 0.7f, 0.4f, 0.25f);
+        
+        public static Color MenuBackgroundColor = new Color(0.0f, 0.0f, 0.0f, 0.5f);
+        public static Color MenuSecondaryBackgroundColor = new Color(0.1f, 0.1f, 0.1f, 0.5f);
+        public static Color MenuTertiaryBackgroundColor = new Color(0.05f, 0.05f, 0.05f, 1.0f);
+        public static Color MenuBackButtonColor = new Color(0.2f, 0.2f, 0.2f, 0.6f);
+        public static Color MenuDisabledButtonColor = new Color(0.5f, 0.5f, 0.5f, 0.25f);
+        public static Color MenuSecondaryDisabledButtonColor = new Color(0.35f, 0.35f, 0.35f, 0.25f);
+        public static Color MenuDisabledTextColor = new Color(0.35f, 0.35f, 0.35f, 1.0f);
+        public static Color MenuDefaultTextColor = new Color(0.6f, 0.6f, 0.6f, 1.0f);
+        public static Color MenuSecondaryTextColor = new Color(0.8f, 0.8f, 0.8f, 1.0f);
+        public static Color MenuSectionTitleColor = new Color(0.53f, 0.81f, 0.98f, 1.0f);
+        public static Color MenuSectionTitleShadow = new Color(0.3f, 0.45f, 0.54f, 1.0f);
+        public static Color MenuSectionTitleAdvColor = new Color(1.0f, 0.0f, 0.0f, 1.0f);
+        public static Color MenuSectionTitleAdvShadow = new Color(0.5f, 0.0f, 0.0f, 1.0f);
+        public static Color MenuSectionDescriptionBackgroundColor = new Color(0.5f, 0.5f, 0.5f, 0.1f);
+        public static Color MenuSectionDescriptionOutlineColor = new Color(0.7f, 0.7f, 0.7f, 0.1f);
+        public static Color MenuDisabledArrowColor = new Color(0.18f, 0.55f, 0.34f);
+        public static Color MenuConfirmEnabledColor = new Color(0.0f, 0.5f, 0.0f, 0.4f);
+        public static Color MenuConfirmDisabledColor = new Color(0.5f, 0.0f, 0.0f, 0.4f);
+        public static Color MenuSaveFolderColor = new Color(0.7f, 0.7f, 0.7f, 0.5f);
+
+        public const string MenuBackgroundPath1 = "MenuBackground1";
+        public const string MenuBackgroundPath2 = "MenuBackground2";
+        public const string MenuBackgroundPath3 = "MenuBackground3";
+        public const string MenuBackgroundPath4 = "MenuBackground4";
+        public const string MenuBackgroundPath5 = "MenuBackground5";
+        public const string MenuBackgroundPath6 = "MenuBackground6";
+        public const string MenuBackgroundPath7 = "MenuBackground7";
 
         public FilterMode globalFilterMode = FilterMode.Point;
         public string startupMessage = string.Empty;
@@ -970,7 +1005,7 @@ namespace DaggerfallWorkshop.Game
             if (maxCharacters > 0)
                 textBox.MaxCharacters = maxCharacters;
             textBox.UseFocus = true;
-            textBox.Outline.Enabled = true;
+            textBox.Outline.Enabled = false;
 
             if (panel != null)
                 panel.Components.Add(textBox);
@@ -983,7 +1018,7 @@ namespace DaggerfallWorkshop.Game
             Button button = new UserInterface.Button();
             button.Position = new Vector2(rect.x, rect.y);
             button.Size = new Vector2(rect.width, rect.height);
-            button.Outline.Enabled = true;
+            button.Outline.Enabled = false;
             button.Label.HorizontalAlignment = HorizontalAlignment.Center;
             button.Label.ShadowPosition = Vector2.zero;
             button.Label.Text = text;
@@ -1034,7 +1069,7 @@ namespace DaggerfallWorkshop.Game
             preview.Position = position;
             preview.AutoSize = AutoSizeModes.None;
             preview.Size = new Vector2(40, 6);
-            preview.Outline.Enabled = true;
+            preview.Outline.Enabled = false;
             preview.BackgroundColor = color;
             preview.OnMouseClick += (BaseScreenComponent sender, Vector2 pos) =>
                 uiManager.PushWindow(new ColorPicker(uiManager, previous, (Button)sender));

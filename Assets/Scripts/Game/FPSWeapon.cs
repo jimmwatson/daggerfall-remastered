@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:    Hazelnut
+// Contributors:    Hazelnut, Kyle Lee (https://github.com/jimmwatson)
 // 
 // Notes:
 //
@@ -532,15 +532,25 @@ namespace DaggerfallWorkshop.Game
                 indices.Add(ri);
                 for (int frame = 0; frame < frames; frame++)
                 {
-                    textures.Add(GetWeaponTexture2D(filename, record, frame, metalType, out rect, border, dilate));
-
+                    Texture2D texOriginal = GetWeaponTexture2D(filename, record, frame, metalType, out rect, border, dilate);
                     Texture2D tex;
-                    if (TextureReplacement.TryImportCifRci(filename, record, frame, metalType, true, out tex))
+                    if (TextureReplacement.TryImportCifRci(filename, record, frame, false, out tex))
                     {
                         tex.filterMode = dfUnity.MaterialReader.MainFilterMode;
                         tex.wrapMode = TextureWrapMode.Mirror;
-                        customTextures.Add(MaterialReader.MakeTextureKey(0, (byte)record, (byte)frame), tex);
+                        for (int x = 0; x < texOriginal.width; x++)
+                        {
+                            for (int y = 0; y < texOriginal.height; y++)
+                            {
+                                if (tex.GetPixel(x, y).a == 0)
+                                {
+                                    texOriginal.SetPixel(x, y, Color.clear);
+                                }
+                            }
+                        }
+                        //customTextures.Add(MaterialReader.MakeTextureKey(0, (byte)record, (byte)frame), tex);
                     }
+                    textures.Add(texOriginal);
                 }
             }
 

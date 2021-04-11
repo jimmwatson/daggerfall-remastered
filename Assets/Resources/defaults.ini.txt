@@ -1,24 +1,24 @@
 [Daggerfall]
-MyDaggerfallPath=
+MyDaggerfallPath=Assets\Daggerfall
 MyDaggerfallUnitySavePath=
 
 [Video]
-ResolutionWidth=1280
-ResolutionHeight=720
-RetroRenderingMode=0
-PostProcessingInRetroMode=0
+ResolutionWidth=1024
+ResolutionHeight=768
+RetroRenderingMode=1
+PostProcessingInRetroMode=4
 UseMipMapsInRetroMode=False
 PalettizationLUTShift=1
 VSync=True
 TargetFrameRate=0
-Fullscreen=False
+Fullscreen=True
 ExclusiveFullscreen=False
 RunInBackground=True
-FieldOfView=65
+FieldOfView=66
 MainFilterMode=0
 QualityLevel=5
-ShadowResolutionMode=0
-DungeonLightShadows=False
+ShadowResolutionMode=4
+DungeonLightShadows=True
 InteriorLightShadows=True
 ExteriorLightShadows=True
 MobileNPCShadows=False
@@ -27,42 +27,42 @@ DungeonShadowDistance=20.0
 InteriorShadowDistance=30.0
 ExteriorShadowDistance=90.0
 EnableTextureArrays=True
-RandomDungeonTextures=0
+RandomDungeonTextures=1
 
 [Audio]
 AlternateMusic=False
 SoundFont=
 
 [ChildGuard]
-PlayerNudity=False
+PlayerNudity=True
 
 [GUI]
-ShowOptionsAtStart=True
+ShowOptionsAtStart=False
 GUIFilterMode=0
-VideoFilterMode=1
-Crosshair=True
-SwapHealthAndFatigueColors=False
+VideoFilterMode=0
+Crosshair=False
+SwapHealthAndFatigueColors=True
 DimAlphaStrength=0.5
-FreeScaling=False
+FreeScaling=True
 EnableToolTips=True
 ToolTipDelayInSeconds=0.0
 ToolTipBackgroundColor=404040D2
 ToolTipTextColor=E6E6C8FF
 ShopQualityPresentation=0
 ShopQualityHUDDelay=4
-ShowQuestJournalClocksAsCountdown=False
-EnableInventoryInfoPanel=True
-EnableEnhancedItemLists=False
-EnableVitalsIndicators=True
-EnableModernConversationStyleInTalkWindow=False
-IconsPositioningScheme=Classic
-HelmAndShieldMaterialDisplay=0
-InteractionModeIcon = minimal
-EnableArrowCounter=True
+ShowQuestJournalClocksAsCountdown=True
+EnableInventoryInfoPanel=False
+EnableEnhancedItemLists=True
+EnableVitalsIndicators=False
+EnableModernConversationStyleInTalkWindow=True
+IconsPositioningScheme=smallhorzbottom
+HelmAndShieldMaterialDisplay=3
+InteractionModeIcon = none
+EnableArrowCounter=False
 AccelerateUICopyTexture=False
-SDFFontRendering=True
-EnableGeographicBackgrounds=False
-DungeonExitWagonPrompt=True
+SDFFontRendering=False
+EnableGeographicBackgrounds=True
+DungeonExitWagonPrompt=False
 TravelMapLocationsOutline=False
 IllegalRestWarning=True
 LargeHUD=False
@@ -90,15 +90,15 @@ HeadBobbing=True
 Handedness=0
 WeaponAttackThreshold=0.03
 WeaponSensitivity=1.0
-MovementAcceleration=False
-ToggleSneak=False
-ClickToAttack = False
+MovementAcceleration=True
+ToggleSneak=True
+ClickToAttack = True
 CameraRecoilStrength = 3
 SoundVolume = 1.0
 MusicVolume = 1.0
 InstantRepairs = False
 AllowMagicRepairs = False
-BowDrawback = False
+BowDrawback = True
 
 [Map]
 AutomapNumberOfDungeons=5
@@ -114,9 +114,9 @@ StartCellY=158
 StartInDungeon=True
 
 [Experimental]
-TerrainDistance=3
-TerrainHeightmapPixelError=5
-SmallerDungeons=False
+TerrainDistance=1
+TerrainHeightmapPixelError=0
+SmallerDungeons=True
 CustomBooksImport=True
 AssetCacheThreshold = 25
 
@@ -124,17 +124,17 @@ AssetCacheThreshold = 25
 LypyL_GameConsole=True
 LypyL_ModSystem=True
 AssetInjection=True
-CompressModdedTextures=True
+CompressModdedTextures=False
 NearDeathWarning=True
 AdvancedClimbing=True
-AlternateRandomEnemySelection=False
+AlternateRandomEnemySelection=True
 DungeonAmbientLightScale=1.0
 NightAmbientLightScale=1.0
 PlayerTorchLightScale=1.0
-PlayerTorchFromItems=False
+PlayerTorchFromItems=True
 CombatVoices=True
 EnemyInfighting=True
 EnhancedCombatAI=True
 GuildQuestListBox=False
 BowLeftHandWithSwitching=False
-LoiterLimitInHours=3
+LoiterLimitInHours=12

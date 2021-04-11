@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:    
+// Contributors:    Kyle Lee (https://github.com/jimmwatson)
 // 
 // Notes:
 //
@@ -72,8 +72,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             mainPanel.HorizontalAlignment = HorizontalAlignment.Center;
             mainPanel.VerticalAlignment = VerticalAlignment.Middle;
             mainPanel.Size = mainPanelSize;
-            mainPanel.Outline.Enabled = true;
-            mainPanel.BackgroundColor = Color.black;
+            mainPanel.Outline.Enabled = false;
+            mainPanel.Outline.Color = Color.black;
+            mainPanel.BackgroundColor = DaggerfallUI.MenuTertiaryBackgroundColor;
             NativePanel.Components.Add(mainPanel);
 
             // Scrolling panel
@@ -91,6 +92,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             scroller.Position = scrollerPosition;
             scroller.Size = scrollerSize;
             scroller.OnScroll += Scroller_OnScroll;
+            scroller.BackgroundColor = DaggerfallUI.MenuBackButtonColor;
             mainPanel.Components.Add(scroller);
 
             // TEST
@@ -206,7 +208,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             TextLabel header = new TextLabel();
             header.Text = text;
             header.Font = DaggerfallUI.LargeFont;
-            header.TextColor = DaggerfallUI.DaggerfallDefaultTextColor;
+            header.TextColor = DaggerfallUI.MenuKhaki;
             header.ShadowColor = DaggerfallUI.DaggerfallDefaultShadowColor;
             header.ShadowPosition = DaggerfallUI.DaggerfallDefaultShadowPos;
             header.Position = new Vector2(xpos, ypos + 4);
@@ -228,7 +230,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     Rect rect = new Rect(component.Position + srollOffset, component.Size);
                     if (rect.Contains(mousePos))
                     {
-                        (component as Panel).Outline.Enabled = true;
+                        (component as Panel).Outline.Enabled = false;
                         selectedIcon = (SpellIcon)component.Tag;
                         mouseOverIcon = true;
                     }

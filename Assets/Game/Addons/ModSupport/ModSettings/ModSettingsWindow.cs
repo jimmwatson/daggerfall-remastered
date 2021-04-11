@@ -4,7 +4,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: TheLacus
-// Contributors:    
+// Contributors:    Kyle Lee (https://github.com/jimmwatson)
 // 
 // Notes:
 //
@@ -38,7 +38,15 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
 
         #endregion
 
+        #region UI Textures
+
+        Texture2D titleTexture;
+
+        #endregion
+
         #region Fields
+
+        const string titleScreenFilename = DaggerfallUI.MenuBackgroundPath5;
 
         const float textScale                       = 0.7f;
         const int startX                            = 10;
@@ -50,16 +58,16 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
         const KeyCode nextPageKey                   = KeyCode.Tab;
         const KeyCode previousPageKey               = KeyCode.LeftShift;
 
-        Color panelBackgroundColor                  = new Color(0, 0, 0, 0.7f);
-        Color resetButtonColor                      = new Color(1, 0, 0, 0.4f);           // red with alpha
-        Color saveButtonColor                       = new Color(0.0f, 0.5f, 0.0f, 0.4f);  // green with alpha
-        Color cancelButtonColor                     = new Color(0.2f, 0.2f, 0.2f, 0.4f);  // grey with alpha
-        Color sectionTitleColor                     = new Color(0.53f, 0.81f, 0.98f, 1);  // light blue
-        Color sectionTitleShadow                    = new Color(0.3f, 0.45f, 0.54f, 1);
-        Color sectionTitleAdvColor                  = new Color(1, 0, 0, 1);
-        Color sectionTitleAdvShadow                 = new Color(0.5f, 0, 0, 1);
-        Color sectionDescriptionBackgroundColor     = new Color(0.5f, 0.5f, 0.5f, 0.1f);
-        Color sectionDescriptionOutlineColor        = new Color(0.7f, 0.7f, 0.7f, 0.1f);
+        Color panelBackgroundColor                  = DaggerfallUI.MenuBackgroundColor;
+        Color resetButtonColor                      = DaggerfallUI.MenuFireBrickOpaque;
+        Color saveButtonColor                       = DaggerfallUI.MenuMediumSeaGreenOpaque;
+        Color cancelButtonColor                     = DaggerfallUI.MenuBackButtonColor;
+        Color sectionTitleColor                     = DaggerfallUI.MenuSectionTitleColor;
+        Color sectionTitleShadow                    = DaggerfallUI.MenuSectionTitleShadow;
+        Color sectionTitleAdvColor                  = DaggerfallUI.MenuSectionTitleAdvColor;
+        Color sectionTitleAdvShadow                 = DaggerfallUI.MenuSectionTitleAdvShadow;
+        Color sectionDescriptionBackgroundColor     = DaggerfallUI.MenuSectionDescriptionBackgroundColor;
+        Color sectionDescriptionOutlineColor        = DaggerfallUI.MenuSectionDescriptionOutlineColor;
 
         readonly Mod mod;
         readonly ModSettingsData settings;
@@ -115,10 +123,16 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
 
         protected override void Setup()
         {
+            // Load title background texture
+            titleTexture = Resources.Load<Texture2D>(titleScreenFilename);
+            titleTexture.filterMode = DaggerfallUI.Instance.GlobalFilterMode;
+            ParentPanel.BackgroundTexture = titleTexture;
+            ParentPanel.BackgroundTextureLayout = BackgroundLayout.StretchToFill;
+
             // Setup base panel
             ParentPanel.BackgroundColor = Color.clear;
             mainPanel.BackgroundColor = panelBackgroundColor;
-            mainPanel.Outline.Enabled = true;
+            mainPanel.Outline.Enabled = false;
             mainPanel.HorizontalAlignment = HorizontalAlignment.Center;
             mainPanel.Position = new Vector2(0, 8);
             mainPanel.Size = pageRect.size;
@@ -127,8 +141,9 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
             // Title
             TextLabel titleLabel = new TextLabel();
             titleLabel.Text = mod.Title;
+            titleLabel.TextColor = DaggerfallUI.MenuKhaki;
             titleLabel.Font = DaggerfallUI.Instance.Font2;
-            titleLabel.TextScale = 0.75f;
+            titleLabel.TextScale = 0.6f;
             titleLabel.Position = new Vector2(0, 3);
             titleLabel.HorizontalAlignment = HorizontalAlignment.Center;
             mainPanel.Components.Add(titleLabel);
@@ -147,9 +162,10 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
 
             // Presets button
             Button presetButton = new Button();
-            presetButton.Size = new Vector2(35, 9);
-            presetButton.Position = new Vector2(mainPanel.Size.x - 37, 2);
+            presetButton.Size = new Vector2(30, 10);
+            presetButton.Position = new Vector2(mainPanel.Size.x - 35, 2);
             presetButton.Label.Text = ModManager.GetText("presets");
+            presetButton.Label.TextColor = DaggerfallUI.MenuKhaki;
             presetButton.Label.Font = DaggerfallUI.Instance.Font1;
             presetButton.Label.TextScale = 0.4f;
             presetButton.Label.TextColor = sectionTitleColor;
@@ -201,6 +217,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
                     int height = 6;
                     TextLabel keyLabel = GetKeyLabel(section, key, height);
                     BaseScreenComponent control = key.OnWindow(this, x, y, ref height);
+                    control.BackgroundColor = DaggerfallUI.MenuKhakiOpaque;
                     uiControls.Add(key, control);
                     AddAtNextPosition(height, keyLabel, control);
                 }
@@ -286,9 +303,9 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
                     if (paginator == null)
                     {
                         paginator = new Paginator();
-                        paginator.TextColor = Color.yellow;
+                        paginator.TextColor = DaggerfallUI.MenuKhaki;
                         paginator.ArrowColor = Color.green;
-                        paginator.DisabledArrowColor = new Color(0.18f, 0.55f, 0.34f);
+                        paginator.DisabledArrowColor = DaggerfallUI.MenuDisabledArrowColor;
                         paginator.Position = new Vector2(startX + 3, 3.5f);
                         paginator.Size = new Vector2(35, 6);
                         paginator.OnSelected += Paginator_OnSelected;
@@ -355,7 +372,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
             int height = textLabel.TextHeight + 2;
             Panel background = DaggerfallUI.AddPanel(new Rect(x + margin, y, columnWidth - margin * 2, height));
             background.BackgroundColor = sectionDescriptionBackgroundColor;
-            background.Outline.Enabled = true;
+            background.Outline.Enabled = false;
             background.Outline.Color = sectionDescriptionOutlineColor;
             background.Outline.Thickness = 1;
             background.Components.Add(textLabel);
@@ -366,6 +383,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
         {
             TextLabel textLabel = new TextLabel();
             textLabel.Text = ModSettingsData.FormattedName(mod.TryLocalize("Settings", section.Name, key.Name, "Name") ?? key.Name);
+            textLabel.TextColor = DaggerfallUI.MenuKhaki;
             textLabel.ShadowColor = Color.clear;
             textLabel.TextScale = textScale;
             textLabel.HorizontalAlignment = HorizontalAlignment.None;
@@ -391,8 +409,9 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
                 VerticalAlignment = VerticalAlignment.Bottom,
                 BackgroundColor = backgroundColor,
             };
-            button.Outline.Enabled = true;
+            button.Outline.Enabled = false;
             button.Label.Text = label;
+            button.Label.TextColor = DaggerfallUI.MenuKhaki;
             mainPanel.Components.Add(button);
             return button;
         }
