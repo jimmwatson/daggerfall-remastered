@@ -70,6 +70,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
             dropDownToggleButton.OnMouseClick += DropdownButton_OnMouseClick;
             dropDownToggleButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.OptionsDropdown);
             dropDownToggleButton.BackgroundTexture = arrowUpTexture;
+            dropDownToggleButton.Enabled = false;
 
             // Dropdown options panel
             dropdownPanel = new Panel();

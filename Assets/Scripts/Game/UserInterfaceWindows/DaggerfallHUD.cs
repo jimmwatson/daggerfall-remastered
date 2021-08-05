@@ -122,7 +122,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             ShowCrosshair = DaggerfallUnity.Settings.Crosshair;
             ShowVitals = true;
             ShowBreathBar = true;
-            ShowCompass = true;
+            ShowCompass = false;
             ShowInteractionModeIcon = DaggerfallUnity.Settings.InteractionModeIcon.ToLower() != "none";
             ShowEscortingFaces = true;
             ShowLocalQuestPlaces = true;
@@ -282,7 +282,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             // Toggle large HUD rendering
             if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.LargeHUDToggle).IsDownWith(keyModifiers))
             {
-                DaggerfallUnity.Settings.LargeHUD = !DaggerfallUnity.Settings.LargeHUD;
+                //DaggerfallUnity.Settings.LargeHUD = !DaggerfallUnity.Settings.LargeHUD;
             }
 
             // Toggle HUD rendering
@@ -295,8 +295,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.ToggleRetroPP).IsDownWith(keyModifiers))
             {
                 RetroRenderer retrorenderer = GameManager.Instance.RetroRenderer;
-                if (retrorenderer)
-                    retrorenderer.TogglePostprocessing();
+                //if (retrorenderer)
+                    //retrorenderer.TogglePostprocessing();
             }
 
             flickerController.NextCycle();

@@ -1367,7 +1367,7 @@ namespace DaggerfallWorkshop.Game
                 gameobjectBeaconPlayerPosition.name = NameGameobjectBeaconPlayerPosition;
                 gameobjectBeaconPlayerPosition.transform.SetParent(gameobjectBeacons.transform);
                 gameobjectBeaconPlayerPosition.layer = layerAutomap;
-                gameobjectBeaconPlayerPosition.transform.localScale = new Vector3(0.3f, 50.0f, 0.3f);
+                gameobjectBeaconPlayerPosition.transform.localScale = new Vector3(0.0f, 50.0f, 0.0f);
                 Material material = new Material(Shader.Find("Standard"));
                 material.color = new Color(1.0f, 0.0f, 0.0f, 0.5f);
                 //SetMaterialTransparency(material);
@@ -1383,7 +1383,7 @@ namespace DaggerfallWorkshop.Game
                 gameobjectBeaconRotationPivotAxis.name = NameGameobjectBeaconRotationPivotAxis;
                 gameobjectBeaconRotationPivotAxis.transform.SetParent(gameobjectBeacons.transform);
                 gameobjectBeaconRotationPivotAxis.layer = layerAutomap;
-                gameobjectBeaconRotationPivotAxis.transform.localScale = new Vector3(0.15f, 50.2f, 0.15f);
+                gameobjectBeaconRotationPivotAxis.transform.localScale = new Vector3(0.0f, 50.2f, 0.0f);
                 Material material = new Material(Shader.Find("Standard"));
                 material.color = new Color(0.0f, 0.0f, 1.0f, 0.5f);
                 //SetMaterialTransparency(material);

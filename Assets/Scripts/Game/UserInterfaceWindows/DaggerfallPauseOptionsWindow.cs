@@ -147,6 +147,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             versionTextLabel.ShadowColor = versionShadowColor;
             versionTextLabel.ShadowPosition = Vector2.one;
             versionTextLabel.HorizontalAlignment = HorizontalAlignment.Right;
+            versionTextLabel.Enabled = false;
             ParentPanel.Components.Add(versionTextLabel);
         }
 

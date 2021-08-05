@@ -482,6 +482,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             labelHoverText.MaxCharacters = 64;
             labelHoverText.HorizontalAlignment = HorizontalAlignment.Center;
             labelHoverText.HorizontalTextAlignment = TextLabel.HorizontalTextAlignmentSetting.Center;
+            labelHoverText.Enabled = false;
 
             if (defaultToolTip != null)
             {

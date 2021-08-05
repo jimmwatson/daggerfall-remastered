@@ -44,7 +44,7 @@ Crosshair=False
 SwapHealthAndFatigueColors=True
 DimAlphaStrength=0.5
 FreeScaling=True
-EnableToolTips=True
+EnableToolTips=False
 ToolTipDelayInSeconds=0.0
 ToolTipBackgroundColor=404040D2
 ToolTipTextColor=E6E6C8FF
@@ -104,7 +104,7 @@ BowDrawback = True
 
 [Map]
 AutomapNumberOfDungeons=5
-AutomapDisableMicroMap=False
+AutomapDisableMicroMap=True
 AutomapRememberSliceLevel=False
 AutomapAlwaysMaxOutSliceLevel=False
 ExteriorMapDefaultZoomLevel=8

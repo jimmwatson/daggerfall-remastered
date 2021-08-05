@@ -546,7 +546,8 @@ namespace DaggerfallWorkshop
             DaggerfallUnity.LogMessage(message);
 
             // Load settings.ini or set as read-only
-            userIniData = iniParser.ReadFile(userIniPath);
+            //userIniData = iniParser.ReadFile(userIniPath);
+            userIniData = defaultIniData;
 
             // Ensure user ini data in sync with default ini data
             SyncIniData();

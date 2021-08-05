@@ -57,7 +57,7 @@ Shader "Daggerfall/RetroPosterization"
               depth = Linear01Depth(depth);
               
               // Sky untouched
-              if (depth == 1)
+              //if (depth == 1)
                 return fixed4(pow(round(pow(color.rgb, 1 / gamma) * 256.0) / 256.0, gamma), color.a);
 //#endif
                 

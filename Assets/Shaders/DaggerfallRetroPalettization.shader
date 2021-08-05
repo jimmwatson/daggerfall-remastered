@@ -55,8 +55,8 @@ Shader "Daggerfall/RetroPalettization"
                 depth = Linear01Depth(depth);
               
                 // Sky untouched
-                if (depth == 1)
-                  return fixed4(pow(round(pow(color.rgb, 1 / 2.0) * 192.0) / 192.0, 2.0), color.a);
+                //if (depth == 1)
+                  return fixed4(pow(round(pow(color.rgb, 1 / 2.0) * 256.0) / 256.0, 2.0), color.a);
 //#endif
                 
                 // Explore color space!

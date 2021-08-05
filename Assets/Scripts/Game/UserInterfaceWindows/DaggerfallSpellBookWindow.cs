@@ -431,7 +431,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             spellIconPanel.BackgroundTextureLayout = BackgroundLayout.StretchToFill;
             spellIconPanel.ToolTip = defaultToolTip;
             spellIconPanel.ToolTipText = TextManager.Instance.GetLocalizedText("selectIcon");
-            spellIconPanel.OnMouseClick += SpellIconPanel_OnMouseClick;
+            //spellIconPanel.OnMouseClick += SpellIconPanel_OnMouseClick;
             // Add a hotkey to a panel?
 
             spellTargetIconPanel = DaggerfallUI.AddPanel(spellTargetPanelRect, mainPanel);
