@@ -159,6 +159,14 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
             }
             else
             {
+                // When teleporting to interior anchor, restore world compensation height early before initworld
+                // Ensures exterior world level is aligned with building height at time of anchor
+                // Only works with floating origin v3 saves and above with both serialized world compensation and context
+                if (anchorPosition.worldContext == WorldContext.Interior)
+                    GameManager.Instance.StreamingWorld.RestoreWorldCompensationHeight(anchorPosition.worldCompensation.y);
+                else
+                    GameManager.Instance.StreamingWorld.RestoreWorldCompensationHeight(0);
+
                 // Cache scene before departing
                 if (!playerEnterExit.IsPlayerInside)
                     SaveLoadManager.CacheScene(GameManager.Instance.StreamingWorld.SceneName);      // Player is outside
@@ -236,7 +244,10 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
                 DaggerfallConnect.Utility.DFPosition anchorMapPixel = DaggerfallConnect.Arena2.MapsFile.WorldCoordToMapPixel(anchorPosition.worldPosX, anchorPosition.worldPosZ);
                 DaggerfallConnect.Utility.DFPosition playerMapPixel = GameManager.Instance.PlayerGPS.CurrentMapPixel;
                 if (anchorMapPixel.X == playerMapPixel.X && anchorMapPixel.Y == playerMapPixel.Y)
+                {
+                    GameManager.Instance.PlayerEnterExit.PlayerTeleportedIntoDungeon = true;
                     return true;
+                }
             }
 
             return false;
@@ -259,6 +270,9 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
             // Restore final position and unwire event
             serializablePlayer.RestorePosition(anchorPosition);
             PlayerEnterExit.OnRespawnerComplete -= PlayerEnterExit_OnRespawnerComplete;
+
+            // Set "teleported into dungeon" flag when anchor is inside a dungeon
+            GameManager.Instance.PlayerEnterExit.PlayerTeleportedIntoDungeon = anchorPosition.insideDungeon;
 
             // Restore scene cache on arrival
             if (!playerEnterExit.IsPlayerInside)

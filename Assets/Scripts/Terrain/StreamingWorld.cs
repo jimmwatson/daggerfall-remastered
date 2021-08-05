@@ -101,7 +101,7 @@ namespace DaggerfallWorkshop
 
         bool init;
         bool terrainUpdateRunning;
-        bool updateLocatations;
+        bool updateLocations;
 
         DaggerfallLocation currentPlayerLocationObject;
         int playerTilemapIndex = -1;
@@ -251,7 +251,7 @@ namespace DaggerfallWorkshop
                 UpdateWorld();
                 InitPlayerTerrain();
                 StartCoroutine(UpdateTerrains());
-                updateLocatations = true;
+                updateLocations = true;
                 init = false;
             }
 
@@ -259,16 +259,16 @@ namespace DaggerfallWorkshop
             // Raise location update flag any time terrain updates
             if (terrainUpdateRunning)
             {
-                updateLocatations = true;
+                updateLocations = true;
                 return;
             }
 
             // Update locations when terrain data finished
             // This flag is raised during terrain update
-            if (updateLocatations)
+            if (updateLocations)
             {
                 UpdateLocations();
-                updateLocatations = false;
+                updateLocations = false;
             }
 
             // Reposition player
@@ -398,7 +398,6 @@ namespace DaggerfallWorkshop
             TeleportToMapPixel(mapPixel.X, mapPixel.Y, offset, RepositionMethods.Offset);
         }
 
-        // Offset world compensation for floating origin world
         /// <summary>
         /// Offset world compensation for floating origin.
         /// </summary>
@@ -410,6 +409,15 @@ namespace DaggerfallWorkshop
             if (offsetLastPlayerPos)
                 lastPlayerPos += offset;
             RaiseOnFloatingOriginChangeEvent();
+        }
+
+        /// <summary>
+        /// Restores world compensation height without triggering a reposition.
+        /// </summary>
+        /// <param name="height">Height compensation value to restore.</param>
+        public void RestoreWorldCompensationHeight(float height)
+        {
+            worldCompensation.y = height;
         }
 
         /// <summary>
@@ -567,7 +575,7 @@ namespace DaggerfallWorkshop
 
             // Init streaming world
             ClearStreamingWorld();
-            worldCompensation = Vector3.zero;
+            worldCompensation = new Vector3(0, worldCompensation.y, 0);
             mapOrigin = LocalPlayerGPS.CurrentMapPixel;
             MapPixelX = mapOrigin.X;
             MapPixelY = mapOrigin.Y;
@@ -713,7 +721,9 @@ namespace DaggerfallWorkshop
                 {
                     // Add building directory to location game object
                     BuildingDirectory buildingDirectory = locationObject.AddComponent<BuildingDirectory>();
-                    buildingDirectory.SetLocation(location);
+
+                    DFBlock[] blocks;
+                    buildingDirectory.SetLocation(location, out blocks);
 
                     // Add location to loose object list
                     LooseObjectDesc looseObject = new LooseObjectDesc();
@@ -764,10 +774,10 @@ namespace DaggerfallWorkshop
                     }
 
                     // Perform layout and yield after each block is placed
-                    ContentReader contentReader = DaggerfallUnity.Instance.ContentReader;
-                    for (int y = 0; y < height; y++)
+                    int blockIndex = 0;
+                    for (int y = 0; y < height; ++y)
                     {
-                        for (int x = 0; x < width; x++)
+                        for (int x = 0; x < width; ++x, ++blockIndex)
                         {
                             // Set block origin for billboard batches
                             // This causes next additions to be offset by this position
@@ -777,16 +787,13 @@ namespace DaggerfallWorkshop
                             animalsBillboardBatch.BlockOrigin = blockOrigin;
                             //miscBillboardBatch.BlockOrigin = blockOrigin;
 
-                            // Get block name and data
-                            DFBlock blockData;
-                            string blockName = contentReader.BlockFileReader.CheckName(contentReader.MapFileReader.GetRmbBlockName(ref location, x, y));
-                            RMBLayout.GetBlockData(blockName, out blockData);
-
                             // Add block
                             GameObject go = GameObjectHelper.CreateRMBBlockGameObject(
-                                blockData,
+                                blocks[blockIndex],
                                 x,
                                 y,
+                                location.MapTableData.MapId,
+                                location.LocationIndex,
                                 false,
                                 dfUnity.Option_CityBlockPrefab,
                                 natureBillboardBatch,
@@ -805,7 +812,7 @@ namespace DaggerfallWorkshop
                                 dfLocation.ApplyClimateSettings();
 
                             // Set navigation info for this block
-                            cityNavigation.SetRMBData(ref blockData, x, y);
+                            cityNavigation.SetRMBData(blocks[blockIndex], x, y);
 
                             // Optionally yield after placing block
                             if (allowYield)
@@ -1250,7 +1257,8 @@ namespace DaggerfallWorkshop
             if (dfTerrain && dfBillboardBatch)
             {
                 // Get current climate and nature archive and terrain distance
-                int natureArchive = ClimateSwaps.GetNatureArchive(LocalPlayerGPS.ClimateSettings.NatureSet, dfUnity.WorldTime.Now.SeasonValue);
+                DFLocation.ClimateSettings worldClimateSettings = MapsFile.GetWorldClimateSettings(dfTerrain.MapData.worldClimate);
+                int natureArchive = ClimateSwaps.GetNatureArchive(worldClimateSettings.NatureSet, dfUnity.WorldTime.Now.SeasonValue);
                 dfBillboardBatch.SetMaterial(natureArchive);
                 int terrainDist = GetTerrainDist(LocalPlayerGPS.CurrentMapPixel, dfTerrain.MapPixelX, dfTerrain.MapPixelY);
                 dfUnity.TerrainNature.LayoutNature(dfTerrain, dfBillboardBatch, TerrainScale, terrainDist);

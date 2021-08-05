@@ -72,6 +72,8 @@ LargeHUDUndockedAlignment=0
 LargeHUDUndockedOffsetWeapon=False
 LargeHUDOffsetHorse=True
 CanDropQuestItems=False
+EnableQuestDebugger=False
+QuestRumorWeight = 50
 
 [Spells]
 EnableSpellLighting=True
@@ -107,6 +109,10 @@ AutomapRememberSliceLevel=False
 AutomapAlwaysMaxOutSliceLevel=False
 ExteriorMapDefaultZoomLevel=8
 ExteriorMapResetZoomLevelOnNewLocation=True
+AutomapTempleColor=457DC3FF
+AutomapShopColor=BE5518FF
+AutomapTavernColor=557530FF
+AutomapHouseColor=453C28FF
 
 [Startup]
 StartCellX=109

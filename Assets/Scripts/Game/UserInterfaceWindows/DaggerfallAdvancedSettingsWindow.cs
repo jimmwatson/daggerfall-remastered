@@ -98,7 +98,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         HorizontalSlider randomDungeonTextures;
         HorizontalSlider cameraRecoilStrength;
         HorizontalSlider mouseSensitivity;
-        HorizontalSlider weaponSensitivity;
+        //HorizontalSlider weaponSensitivity;
         TextBox weaponAttackThreshold;
         HorizontalSlider soundVolume;
         HorizontalSlider musicVolume;
@@ -169,6 +169,14 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         Checkbox interiorLightShadows;
         Checkbox exteriorLightShadows;
 
+        // Accessibility
+        Button automapTempleColor;
+        Button automapShopColor;
+        Button automapTavernColor;
+        Button automapHouseColor;
+
+        Button automapReset;
+
         #endregion
 
         #region Override Methods
@@ -238,6 +246,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             AddPage("interface", Interface);
             AddPage("enhancements", Enhancements);
             AddPage("video", Video);
+            AddPage("accessibility", Accessibility);
         }
 
         private void Gameplay(Panel leftPanel, Panel rightPanel)
@@ -253,7 +262,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             // Controls
             AddSectionTitle(leftPanel, "controls");
             mouseSensitivity = AddSlider(leftPanel, "mouseSensitivity", 0.1f, 8.0f, DaggerfallUnity.Settings.MouseLookSensitivity);
-            weaponSensitivity = AddSlider(leftPanel, "weaponSensitivity", 0.1f, 10.0f, DaggerfallUnity.Settings.WeaponSensitivity);
+            //weaponSensitivity = AddSlider(leftPanel, "weaponSensitivity", 0.1f, 10.0f, DaggerfallUnity.Settings.WeaponSensitivity);
             movementAcceleration = AddCheckbox(leftPanel, "movementAcceleration", DaggerfallUnity.Settings.MovementAcceleration);
             weaponAttackThreshold = AddTextbox(leftPanel, "weaponAttackThreshold", DaggerfallUnity.Settings.WeaponAttackThreshold.ToString());
             bowDrawback = AddCheckbox(leftPanel, "bowDrawback", DaggerfallUnity.Settings.BowDrawback);
@@ -372,7 +381,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             // Advanced settings
             AddSectionTitle(rightPanel, "advanced");
-            fovSlider = AddSlider(rightPanel, "fovSlider", 60, 80, DaggerfallUnity.Settings.FieldOfView);
+            fovSlider = AddSlider(rightPanel, "fovSlider", 60, 120, DaggerfallUnity.Settings.FieldOfView);
             terrainDistance = AddSlider(rightPanel, "terrainDistance", 1, 4, DaggerfallUnity.Settings.TerrainDistance);
             shadowResolutionMode = AddSlider(rightPanel, "shadowResolutionMode",
                 DaggerfallUnity.Settings.ShadowResolutionMode, "Low", "Medium", "High", "Very High");
@@ -391,6 +400,25 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 DaggerfallUnity.Settings.PostProcessingInRetroMode, "Off", "Posterization (full)", "Posterization (-sky)", "Palettization (full)", "Palettization (-sky)");
         }
 
+        private void Accessibility(Panel leftPanel, Panel rightPanel)
+        {
+            AddSectionTitle(leftPanel, "automap");
+            automapTempleColor = AddColorPicker(leftPanel, "automapTempleColor", DaggerfallUnity.Settings.AutomapTempleColor);
+            automapShopColor = AddColorPicker(leftPanel, "automapShopColor", DaggerfallUnity.Settings.AutomapShopColor);
+            automapTavernColor = AddColorPicker(leftPanel, "automapTavernColor", DaggerfallUnity.Settings.AutomapTavernColor);
+            automapHouseColor = AddColorPicker(leftPanel, "automapHouseColor", DaggerfallUnity.Settings.AutomapHouseColor);
+
+            automapReset = AddButton(leftPanel, GetText("reset"), AutomapReset_OnMouseClick);
+        }
+
+        private void AutomapReset_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+        {
+            automapTempleColor.BackgroundColor = DaggerfallUI.DaggerfallDefaultTempleAutomapColor;
+            automapShopColor.BackgroundColor = DaggerfallUI.DaggerfallDefaultShopAutomapColor;
+            automapTavernColor.BackgroundColor = DaggerfallUI.DaggerfallDefaultTavernAutomapColor;
+            automapHouseColor.BackgroundColor = DaggerfallUI.DaggerfallDefaultHouseAutomapColor;
+        }
+
         private void SaveSettings()
         {
             /* GamePlay */
@@ -399,7 +427,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             DaggerfallUnity.Settings.RandomDungeonTextures = randomDungeonTextures.ScrollIndex;
 
             DaggerfallUnity.Settings.MouseLookSensitivity = mouseSensitivity.GetValue();
-            DaggerfallUnity.Settings.WeaponSensitivity = weaponSensitivity.GetValue();
+            //DaggerfallUnity.Settings.WeaponSensitivity = weaponSensitivity.GetValue();
             DaggerfallUnity.Settings.MovementAcceleration = movementAcceleration.IsChecked;
             float weaponAttackThresholdValue;
             if (float.TryParse(weaponAttackThreshold.Text, out weaponAttackThresholdValue))
@@ -503,6 +531,12 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             DaggerfallUnity.Settings.ExteriorLightShadows = exteriorLightShadows.IsChecked;
             DaggerfallUnity.Settings.RetroRenderingMode = retroRenderingMode.ScrollIndex;
             DaggerfallUnity.Settings.PostProcessingInRetroMode = postProcessingInRetroMode.ScrollIndex;
+
+            /* Accessibility */
+            DaggerfallUnity.Settings.AutomapTempleColor = automapTempleColor.BackgroundColor;
+            DaggerfallUnity.Settings.AutomapShopColor = automapShopColor.BackgroundColor;
+            DaggerfallUnity.Settings.AutomapTavernColor = automapTavernColor.BackgroundColor;
+            DaggerfallUnity.Settings.AutomapHouseColor = automapHouseColor.BackgroundColor;
 
             DaggerfallUnity.Settings.SaveSettings();
         }
@@ -729,6 +763,19 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             y += itemSpacing;
             return colorPicker;
+        }
+
+        private Button AddButton(Panel panel, string label, BaseScreenComponent.OnMouseClickHandler onMouseClickHandler)
+        {
+            Button button = DaggerfallUI.AddButton(new Vector2(panel.Size.x / 2, y), new Vector2(30, 8), panel);
+            button.Label.Text = label;
+            button.OnMouseClick += onMouseClickHandler;
+            button.Outline.Enabled = true;
+            button.BackgroundColor = new Color(0.0f, 0.5f, 0.0f, 0.4f);
+
+            y += itemSpacing + 2;
+
+            return button;
         }
 
         private static string GetText(string key)

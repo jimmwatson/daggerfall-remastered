@@ -55,7 +55,7 @@ namespace DaggerfallWorkshop.Game
         public float ChanceToBeParried = 0.1f;      // Example: Chance for player hit to be parried
         public DaggerfallMissile ArrowMissilePrefab;
 
-        float weaponSensitivity = 1.0f;             // Sensitivity of weapon swings to mouse movements
+        //float weaponSensitivity = 1.0f;             // Sensitivity of weapon swings to mouse movements
         private Gesture _gesture;
         private int _longestDim;                    // Longest screen dimension, used to compare gestures for attack
 
@@ -193,7 +193,7 @@ namespace DaggerfallWorkshop.Game
 
         void Start()
         {
-            weaponSensitivity = DaggerfallUnity.Settings.WeaponSensitivity;
+            //weaponSensitivity = DaggerfallUnity.Settings.WeaponSensitivity;
             mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             player = transform.gameObject;
             playerLayerMask = ~(1 << LayerMask.NameToLayer("Player"));
@@ -370,11 +370,6 @@ namespace DaggerfallWorkshop.Game
             {
                 ScreenWeapon.PlaySwingSound();
                 isBowSoundFinished = true;
-
-                // Remove arrow
-                ItemCollection playerItems = playerEntity.Items;
-                DaggerfallUnityItem arrow = playerItems.GetItem(ItemGroups.Weapons, (int)Weapons.Arrow);
-                playerItems.RemoveOne(arrow);
             }
             else if (!isDamageFinished && ScreenWeapon.GetCurrentFrame() == ScreenWeapon.GetHitFrame())
             {
@@ -398,10 +393,17 @@ namespace DaggerfallWorkshop.Game
                     DaggerfallMissile missile = Instantiate(ArrowMissilePrefab);
                     if (missile)
                     {
+                        // Remove arrow
+                        ItemCollection playerItems = playerEntity.Items;
+                        DaggerfallUnityItem arrow = playerItems.GetItem(ItemGroups.Weapons, (int)Weapons.Arrow, allowQuestItem: false, priorityToConjured: true);
+                        bool isArrowSummoned = arrow.IsSummoned;
+                        playerItems.RemoveOne(arrow);
+
                         missile.Caster = GameManager.Instance.PlayerEntityBehaviour;
                         missile.TargetType = TargetTypes.SingleTargetAtRange;
                         missile.ElementType = ElementTypes.None;
                         missile.IsArrow = true;
+                        missile.IsArrowSummoned = isArrowSummoned;
 
                         lastBowUsed = usingRightHand ? currentRightHandWeapon : currentLeftHandWeapon;;
                     }
@@ -479,7 +481,7 @@ namespace DaggerfallWorkshop.Game
         }
 
         // Returns true if hit an enemy entity
-        public bool WeaponDamage(DaggerfallUnityItem strikingWeapon, bool arrowHit, Transform hitTransform, Vector3 impactPosition, Vector3 direction)
+        public bool WeaponDamage(DaggerfallUnityItem strikingWeapon, bool arrowHit, bool arrowSummoned, Transform hitTransform, Vector3 impactPosition, Vector3 direction)
         {
             DaggerfallEntityBehaviour entityBehaviour = hitTransform.GetComponent<DaggerfallEntityBehaviour>();
             var entityMobileUnit = hitTransform.GetComponentInChildren<MobileUnit>();
@@ -541,8 +543,8 @@ namespace DaggerfallWorkshop.Game
                     if (playerEntity.IsMagicallyConcealedNormalPower && damage > 0)
                         EntityEffectManager.BreakNormalPowerConcealmentEffects(GameManager.Instance.PlayerEntityBehaviour);
 
-                    // Play arrow sound and add arrow to target's inventory
-                    if (arrowHit)
+                    // Add arrow to target's inventory
+                    if (arrowHit && !arrowSummoned)
                     {
                         DaggerfallUnityItem arrow = ItemBuilder.CreateItem(ItemGroups.Weapons, (int)Weapons.Arrow);
                         enemyEntity.Items.AddItem(arrow);
@@ -768,7 +770,7 @@ namespace DaggerfallWorkshop.Game
         MouseDirections TrackMouseAttack()
         {
             // Track action for idle plus all eight mouse directions
-            var sum = _gesture.Add(InputManager.Instance.MouseX, InputManager.Instance.MouseY) * weaponSensitivity;
+            var sum = _gesture.Add(InputManager.Instance.MouseX, InputManager.Instance.MouseY);
 
             if (InputManager.Instance.UsingController)
             {
@@ -893,7 +895,7 @@ namespace DaggerfallWorkshop.Game
                    // Fall back to simple ray for narrow cages https://forums.dfworkshop.net/viewtopic.php?f=5&t=2195#p39524
                    || Physics.Raycast(ray, out hit, weapon.Reach, playerLayerMask))
                 {
-                    hitEnemy = WeaponDamage(strikingWeapon, false, hit.transform, hit.point, mainCamera.transform.forward);
+                    hitEnemy = WeaponDamage(strikingWeapon, false, false, hit.transform, hit.point, mainCamera.transform.forward);
                 }
             }
         }

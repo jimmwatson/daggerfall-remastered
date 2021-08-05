@@ -22,10 +22,13 @@ namespace DaggerfallWorkshop.Game.UserInterface
 {
     /// <summary>
     /// Output quest information on HUD to view state in real-time and optionally step-through execution.
-    /// Uses some non-bindable keys (not all implemented):
-    ///  * ]            Show next quest tasks/vars/timers (only when debugger HUD open)
-    ///  * [            Show previous quest tasks/vars/timers (only when debugger HUD open)
-    ///  * Shift+Tab    Toggle global variables display
+    /// Uses default keys (set in DialogShortcuts.txt file):
+    ///  * Ctrl+Shift+D             Cycle through debugger and global variables display state
+    ///  * Ctrl+Shift+RightArrow    Show next quest tasks/vars/timers (only when debugger HUD open)
+    ///  * Ctrl+Shift+LeftArrow     Show previous quest tasks/vars/timers (only when debugger HUD open)
+    ///  * Ctrl+Shift+UpArrow       Teleport to next dungeon marker (only when debugger HUD open inside dungeon)
+    ///  * Ctrl+Shift+DownArrow     Teleport to next dungeon marker (only when debugger HUD open inside dungeon)
+    /// NOTE: EnableQuestDebugger must be True in settings.ini
     /// </summary>
     public class HUDQuestDebugger : Panel
     {
@@ -35,10 +38,10 @@ namespace DaggerfallWorkshop.Game.UserInterface
         const int rowHeight = 10;
         const int taskColWidth = 60;
         const int timerColWidth = 100;
-        const string noQuestsRunning = "NO QUESTS RUNNING";
-        const string questRunning = "Running";
-        const string questFinishedSuccess = "Finished (success)";
-        const string questFinishedEnded = "Finished (ended)";
+        public const string noQuestsRunning = "NO QUESTS RUNNING";
+        public const string questRunning = "Running";
+        public const string questFinishedSuccess = "Finished (success)";
+        public const string questFinishedEnded = "Finished (ended)";
         const int taskLabelPoolCount = 84;
         const int timerLabelPoolCount = 20;
         const int globalLabelPoolCount = 64;
@@ -129,6 +132,13 @@ namespace DaggerfallWorkshop.Game.UserInterface
         public override void Update()
         {
             base.Update();
+
+            // Display nothing and exit if quest debugger not enabled
+            if (!DaggerfallUnity.Settings.EnableQuestDebugger)
+            {
+                displayState = DisplayState.Nothing;
+                return;
+            }
 
             // Do not tick while HUD fading or load in progress
             // This is to prevent quest popups or other actions while player/world unavailable

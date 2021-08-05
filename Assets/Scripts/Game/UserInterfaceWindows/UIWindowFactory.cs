@@ -29,7 +29,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         EffectSettingsEditor,
         ExteriorAutomap,
         GuildServicePopup,
-        Inventory,
+        GuildServiceCureDisease = 39,   // Ensure existing values remain 
+        GuildServiceDonation = 40,      //  unchanged so as not to break 
+        GuildServiceTraining = 41,      //  existing pre-compiled mods.
+        Inventory = 11,
         ItemMaker,
         JoystickControls,
         LoadClassicGame,
@@ -42,7 +45,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         QuestOffer,
         Rest,
         SpellBook,
-        SpellMaker,
+        SpellIconPicker = 42, // Ensure existing values remain unchanged so as not to break existing pre-compiled mods.
+        SpellMaker = 24,
         StartNewGameWizard,
         Start,
         Talk,
@@ -71,8 +75,12 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             { UIWindowType.Controls, typeof(DaggerfallControlsWindow) },
             { UIWindowType.Court, typeof(DaggerfallCourtWindow) },
             { UIWindowType.DaedraSummoned, typeof(DaggerfallDaedraSummonedWindow) },
+            { UIWindowType.EffectSettingsEditor, typeof(DaggerfallEffectSettingsEditorWindow) },
             { UIWindowType.ExteriorAutomap, typeof(DaggerfallExteriorAutomapWindow) },
             { UIWindowType.GuildServicePopup, typeof(DaggerfallGuildServicePopupWindow) },
+            { UIWindowType.GuildServiceCureDisease, typeof(DaggerfallGuildServiceCureDisease) },
+            { UIWindowType.GuildServiceDonation, typeof(DaggerfallGuildServiceDonation) },
+            { UIWindowType.GuildServiceTraining, typeof(DaggerfallGuildServiceTraining) },
             { UIWindowType.Inventory, typeof(DaggerfallInventoryWindow) },
             { UIWindowType.ItemMaker, typeof(DaggerfallItemMakerWindow) },
             { UIWindowType.JoystickControls, typeof(DaggerfallJoystickControlsWindow) },
@@ -86,6 +94,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             { UIWindowType.QuestOffer, typeof(DaggerfallQuestOfferWindow) },
             { UIWindowType.Rest, typeof(DaggerfallRestWindow) },
             { UIWindowType.SpellBook, typeof(DaggerfallSpellBookWindow) },
+            { UIWindowType.SpellIconPicker, typeof(SpellIconPickerWindow) },
             { UIWindowType.SpellMaker, typeof(DaggerfallSpellMakerWindow) },
             { UIWindowType.StartNewGameWizard, typeof(StartNewGameWizard) },
             { UIWindowType.Start, typeof(DaggerfallStartWindow) },

@@ -24,6 +24,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
     {
         const int midScreenTextDefaultY = 146;
 
+        Color realArrowsColor = new Color(0.6f, 0.6f, 0.6f);
+        Color conjuredArrowsColor = new Color(0.18f, 0.32f, 0.48f, 0.5f);
+
         float crosshairScale = 0.75f;
 
         PopupText popupText = new PopupText();
@@ -160,7 +163,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             questDebugger.AutoSize = AutoSizeModes.ScaleToFit;
             ParentPanel.Components.Add(questDebugger);
 
-            arrowCountTextLabel.TextColor = new Color(0.6f, 0.6f, 0.6f);
+            arrowCountTextLabel.TextColor = realArrowsColor;
             arrowCountTextLabel.ShadowPosition = Vector2.zero;
             ParentPanel.Components.Add(arrowCountTextLabel);
         }
@@ -181,6 +184,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             activeSpells.Enabled = ShowActiveSpells;
 
             // Large HUD will force certain other HUD elements off as they conflict in space or utility
+            bool largeHUDwasEnabled = largeHUD.Enabled;
             bool largeHUDEnabled = DaggerfallUnity.Settings.LargeHUD;
             if (largeHUDEnabled)
             {
@@ -204,6 +208,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 largeHUD.Enabled = false;
             }
+
+            if (largeHUDEnabled != largeHUDwasEnabled)
+                RaiseOnLargeHUDToggleEvent();
 
             // Scale large HUD
             largeHUD.CustomScale = NativePanel.LocalScale;
@@ -250,8 +257,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     arrowLabelPos.x -= arrowCountTextLabel.TextWidth;
                     arrowLabelPos.y += compass.Size.y / 2 - arrowCountTextLabel.TextHeight / 2;
 
-                    DaggerfallUnityItem arrows = GameManager.Instance.PlayerEntity.Items.GetItem(ItemGroups.Weapons, (int)Weapons.Arrow);
+                    DaggerfallUnityItem arrows = GameManager.Instance.PlayerEntity.Items.GetItem(ItemGroups.Weapons, (int)Weapons.Arrow, allowQuestItem: false, priorityToConjured: true);
                     arrowCountTextLabel.Text = (arrows != null) ? arrows.stackCount.ToString() : "0";
+                    arrowCountTextLabel.TextColor = (arrows != null && arrows.IsSummoned) ? conjuredArrowsColor : realArrowsColor;
                     arrowCountTextLabel.TextScale = NativePanel.LocalScale.x;
                     arrowCountTextLabel.Position = arrowLabelPos;
                     arrowCountTextLabel.Enabled = true;
@@ -262,7 +270,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             // Cycle quest debugger state
             if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.DebuggerToggle).IsDownWith(keyModifiers))
             {
-                questDebugger.NextState();
+                if (DaggerfallUnity.Settings.EnableQuestDebugger)
+                    questDebugger.NextState();
             }
 
             if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.Pause).IsUpWith(keyModifiers))
@@ -335,5 +344,18 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             midScreenTextDelay = delay;
             GameManager.Instance.PlayerEntity.Notebook.AddMessage(message);
         }
+
+        #region Events
+
+        // OnLargeHUDToggleEvent
+        public delegate void OnLargeHUDToggleHandler();
+        public static event OnLargeHUDToggleHandler OnLargeHUDToggle;
+        protected virtual void RaiseOnLargeHUDToggleEvent()
+        {
+            if (OnLargeHUDToggle != null)
+                OnLargeHUDToggle();
+        }
+
+        #endregion
     }
 }

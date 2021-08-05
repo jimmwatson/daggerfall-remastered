@@ -31,57 +31,57 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
     {
         #region UI Rects
 
-        Vector2 spellNameLabelPos = new Vector2(123, 2);
-        Vector2 spellPointsLabelPos = new Vector2(214, 2);
-        Vector2 spellCostLabelPos = new Vector2(76, 154);
-        Vector2 goldLabelPos = new Vector2(116, 154);
+        protected Vector2 spellNameLabelPos = new Vector2(123, 2);
+        protected Vector2 spellPointsLabelPos = new Vector2(214, 2);
+        protected Vector2 spellCostLabelPos = new Vector2(76, 154);
+        protected Vector2 goldLabelPos = new Vector2(116, 154);
 
-        Rect mainPanelRect = new Rect(0, 0, 259, 164);
-        Rect spellsListBoxRect = new Rect(5, 13, 110, 130);
-        Rect deleteOrBuyButtonRect = new Rect(3, 152, 38, 9);
-        Rect upButtonRect = new Rect(48, 152, 38, 9);
-        Rect sortButtonRect = new Rect(90, 152, 38, 9);
-        Rect downButtonRect = new Rect(132, 152, 38, 9);
-        Rect upArrowButtonRect = new Rect(121, 11, 9, 16);
-        Rect downArrowButtonRect = new Rect(121, 132, 9, 16);
-        Rect exitButtonRect = new Rect(216, 149, 43, 15);
-        Rect spellsListScrollBarRect = new Rect(122, 28, 7, 103);
-        Rect spellIconPanelRect = new Rect(149.25f, 14, 16, 16);
-        Rect spellTargetPanelRect = new Rect(182, 14, 25, 16);
-        Rect spellElementIconPanelRect = new Rect(223, 14, 16, 16);
-        Rect effect1PanelRect = new Rect(138, 40, 118, 28);
-        Rect effect2PanelRect = new Rect(138, 78, 118, 28);
-        Rect effect3PanelRect = new Rect(138, 116, 118, 28);
+        protected Rect mainPanelRect = new Rect(0, 0, 259, 164);
+        protected Rect spellsListBoxRect = new Rect(5, 13, 110, 130);
+        protected Rect deleteOrBuyButtonRect = new Rect(3, 152, 38, 9);
+        protected Rect upButtonRect = new Rect(48, 152, 38, 9);
+        protected Rect sortButtonRect = new Rect(90, 152, 38, 9);
+        protected Rect downButtonRect = new Rect(132, 152, 38, 9);
+        protected Rect upArrowButtonRect = new Rect(121, 11, 9, 16);
+        protected Rect downArrowButtonRect = new Rect(121, 132, 9, 16);
+        protected Rect exitButtonRect = new Rect(216, 149, 43, 15);
+        protected Rect spellsListScrollBarRect = new Rect(122, 28, 7, 103);
+        protected Rect spellIconPanelRect = new Rect(149.25f, 14, 16, 16);
+        protected Rect spellTargetPanelRect = new Rect(182, 14, 25, 16);
+        protected Rect spellElementIconPanelRect = new Rect(223, 14, 16, 16);
+        protected Rect effect1PanelRect = new Rect(138, 40, 118, 28);
+        protected Rect effect2PanelRect = new Rect(138, 78, 118, 28);
+        protected Rect effect3PanelRect = new Rect(138, 116, 118, 28);
 
         #endregion
 
         #region UI Controls
 
-        ListBox spellsListBox;
-        VerticalScrollBar spellsListScrollBar;
-
-        Panel mainPanel;
-        Panel spellIconPanel;
-        Panel spellTargetIconPanel;
-        Panel spellElementIconPanel;
+        protected ListBox spellsListBox;
+        protected VerticalScrollBar spellsListScrollBar;
+        
+        protected Panel mainPanel;
+        protected Panel spellIconPanel;
+        protected Panel spellTargetIconPanel;
+        protected Panel spellElementIconPanel;
         Panel[] spellEffectPanels;
 
-        Button exitButton;
-        Button deleteButton;
-        Button buyButton;
-        Button downButton;
-        Button upButton;
-        Button sortButton;
-        Button upArrowButton;
-        Button downArrowButton;
+        protected Button exitButton;
+        protected Button deleteButton;
+        protected Button buyButton;
+        protected Button downButton;
+        protected Button upButton;
+        protected Button sortButton;
+        protected Button upArrowButton;
+        protected Button downArrowButton;
 
-        TextLabel spellNameLabel;
-        TextLabel spellPointsLabel;
-        TextLabel spellCostLabel;
-        TextLabel goldLabel;
-        TextLabel[] spellEffectLabels;
+        protected TextLabel spellNameLabel;
+        protected TextLabel spellPointsLabel;
+        protected TextLabel spellCostLabel;
+        protected TextLabel goldLabel;
+        protected TextLabel[] spellEffectLabels;
 
-        SpellIconPickerWindow iconPicker;
+        protected SpellIconPickerWindow iconPicker;
 
         #endregion
 
@@ -93,25 +93,25 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         #region Fields
 
-        const string spellBookTextureFilename = "SPBK00I0.IMG";
-        const string spellBookBuyModeTextureFilename = "SPBK01I0.IMG";
-        const string spellsFilename = "SPELLS.STD";
+        protected const string spellBookTextureFilename = "SPBK00I0.IMG";
+        protected const string spellBookBuyModeTextureFilename = "SPBK01I0.IMG";
+        protected const string spellsFilename = "SPELLS.STD";
+         
+        protected const int noSpellBook = 1703;
 
-        const int noSpellBook = 1703;
+        protected const SoundClips openSpellBook = SoundClips.OpenBook;
+        protected const SoundClips openSpellBookBuyMode = SoundClips.ButtonClick;
+        protected const SoundClips editSpellBook = SoundClips.PageTurn;
+        protected const SoundClips closeSpellBook = SoundClips.PageTurn;
 
-        const SoundClips openSpellBook = SoundClips.OpenBook;
-        const SoundClips openSpellBookBuyMode = SoundClips.ButtonClick;
-        const SoundClips editSpellBook = SoundClips.PageTurn;
-        const SoundClips closeSpellBook = SoundClips.PageTurn;
-
-        bool buyMode = false;
-        EffectBundleSettings renamedSpellSettings;
-        int deleteSpellIndex = -1;
-        KeyCode toggleClosedBinding;
-        List<EffectBundleSettings> offeredSpells = new List<EffectBundleSettings>();
-        PlayerGPS.DiscoveredBuilding buildingDiscoveryData;
-        int presentedCost;
-        bool isCloseWindowDeferred = false;
+        protected bool buyMode = false;
+        protected EffectBundleSettings renamedSpellSettings;
+        protected int deleteSpellIndex = -1;
+        protected KeyCode toggleClosedBinding;
+        protected List<EffectBundleSettings> offeredSpells = new List<EffectBundleSettings>();
+        protected PlayerGPS.DiscoveredBuilding buildingDiscoveryData;
+        protected int presentedCost;
+        protected bool isCloseWindowDeferred = false;
 
         #endregion
 
@@ -181,7 +181,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
         }
 
-        void SetDefaults()
+        protected virtual void SetDefaults()
         {
             // Set spell points label
             if (!buyMode)
@@ -212,7 +212,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        void RefreshSpellsList(bool preservePosition)
+        protected virtual void RefreshSpellsList(bool preservePosition)
         {
             // Preserve indices before ClearItems()
             int oldScrollIndex = spellsListBox.ScrollIndex;
@@ -251,14 +251,13 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        private void PopulateSpellsList(List<EffectBundleSettings> spells, int? availableSpellPoints = null)
+        protected virtual void PopulateSpellsList(List<EffectBundleSettings> spells, int? availableSpellPoints = null)
         {
             foreach (EffectBundleSettings spell in spells)
             {
                 // Get spell costs
                 // Costs can change based on player skills and stats so must be calculated each time
-                int goldCost, spellPointCost;
-                FormulaHelper.CalculateTotalEffectCosts(spell.Effects, spell.TargetType, out goldCost, out spellPointCost, null, spell.MinimumCastingCost);
+                (int _, int spellPointCost) = FormulaHelper.CalculateTotalEffectCosts(spell.Effects, spell.TargetType, null, spell.MinimumCastingCost);
 
                 // Lycanthropy is a free spell, even though it shows a cost in classic
                 // Setting cost to 0 so it displays correctly in spellbook
@@ -280,22 +279,25 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        private void LoadSpellsForSale()
+        protected virtual void LoadSpellsForSale()
         {
             // Load spells for sale
             offeredSpells.Clear();
-            List<SpellRecord.SpellRecordData> standardSpells = DaggerfallSpellReader.ReadSpellsFile(Path.Combine(DaggerfallUnity.Arena2Path, spellsFilename));
-            if (standardSpells == null || standardSpells.Count == 0)
+
+            var effectBroker = GameManager.Instance.EntityEffectBroker;
+
+            IEnumerable<SpellRecord.SpellRecordData> standardSpells = effectBroker.StandardSpells;
+            if (standardSpells == null || standardSpells.Count() == 0)
             {
                 Debug.LogError("Failed to load SPELLS.STD for spellbook in buy mode.");
                 return;
             }
 
             // Add standard spell bundles to offer
-            for (int i = 0; i < standardSpells.Count; i++)
+            foreach(SpellRecord.SpellRecordData standardSpell in standardSpells)
             {
                 // Filter internal spells starting with exclamation point '!'
-                if (standardSpells[i].spellName.StartsWith("!"))
+                if (standardSpell.spellName.StartsWith("!"))
                     continue;
 
                 // NOTE: Classic allows purchase of duplicate spells
@@ -304,7 +306,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
                 // Get effect bundle settings from classic spell
                 EffectBundleSettings bundle;
-                if (!GameManager.Instance.EntityEffectBroker.ClassicSpellRecordDataToEffectBundleSettings(standardSpells[i], BundleTypes.Spell, out bundle))
+                if (!effectBroker.ClassicSpellRecordDataToEffectBundleSettings(standardSpell, BundleTypes.Spell, out bundle))
                     continue;
 
                 // Store offered spell and add to list box
@@ -312,7 +314,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
 
             // Add custom spells for sale bundles to list of offered spells
-            offeredSpells.AddRange(GameManager.Instance.EntityEffectBroker.GetCustomSpellBundles(EntityEffectBroker.CustomSpellBundleOfferUsage.SpellsForSale));
+            offeredSpells.AddRange(effectBroker.GetCustomSpellBundles(EntityEffectBroker.CustomSpellBundleOfferUsage.SpellsForSale));
 
             // Sort spells for easier finding
             offeredSpells = offeredSpells.OrderBy(x => x.Name).ToList();
@@ -320,9 +322,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         #endregion
 
-        #region Private Methods
+        #region Protected Methods
 
-        void LoadTextures()
+        protected virtual void LoadTextures()
         {
             if (!buyMode)
                 baseTexture = DaggerfallUI.GetTextureFromImg(spellBookTextureFilename);
@@ -330,7 +332,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 baseTexture = DaggerfallUI.GetTextureFromImg(spellBookBuyModeTextureFilename);
         }
 
-        void SetupMain()
+        protected virtual void SetupMain()
         {
             // Main panel
             mainPanel = DaggerfallUI.AddPanel(mainPanelRect, NativePanel);
@@ -381,7 +383,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             // TODO: Prepare UI for spell buy mode
         }
 
-        void SetupButtons()
+        protected virtual void SetupButtons()
         {
             // Bottom row buttons
             if (!buyMode)
@@ -422,7 +424,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             downArrowButton.OnMouseClick += DownArrowButton_OnMouseClick;
         }
 
-        void SetupIcons()
+        protected virtual void SetupIcons()
         {
             spellIconPanel = DaggerfallUI.AddPanel(spellIconPanelRect, mainPanel);
             spellIconPanel.BackgroundColor = Color.black;
@@ -443,14 +445,14 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             spellElementIconPanel.ToolTip = defaultToolTip;
         }
 
-        void ShowIcons(bool show)
+        protected virtual void ShowIcons(bool show)
         {
             spellIconPanel.Enabled = show;
             spellTargetIconPanel.Enabled = show;
             spellElementIconPanel.Enabled = show;
         }
 
-        void SetupLabels()
+        protected virtual void SetupLabels()
         {
             // Spell name
             spellNameLabel = DaggerfallUI.AddTextLabel(DaggerfallUI.DefaultFont, spellNameLabelPos, string.Empty, mainPanel);
@@ -493,12 +495,12 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        void UpdateGold()
+        protected virtual void UpdateGold()
         {
             goldLabel.Text = GameManager.Instance.PlayerEntity.GetGoldAmount().ToString();
         }
 
-        void UpdateSelection()
+        protected virtual void UpdateSelection()
         {
             // Update spell list scroller
             spellsListScrollBar.Reset(spellsListBox.RowsDisplayed, spellsListBox.Count, spellsListBox.ScrollIndex);
@@ -511,9 +513,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 spellSettings = offeredSpells[spellsListBox.SelectedIndex];
 
-                // The price shown in buy mode is the player casting cost * 4
-                int goldCost, spellPointCost;
-                FormulaHelper.CalculateTotalEffectCosts(spellSettings.Effects, spellSettings.TargetType, out goldCost, out spellPointCost);
+                // The price shown in buy mode is the player casting cost * 4                
+                (int _, int spellPointCost) = FormulaHelper.CalculateTotalEffectCosts(spellSettings.Effects, spellSettings.TargetType);
                 presentedCost = spellPointCost * 4;
 
                 // Presented cost is halved on Witches Festival holiday
@@ -570,7 +571,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             ShowIcons(true);
         }
 
-        private string GetTargetTypeDescription(TargetTypes targetType)
+        protected virtual string GetTargetTypeDescription(TargetTypes targetType)
         {
             switch (targetType)
             {
@@ -589,7 +590,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        private string GetElementDescription(ElementTypes elementType)
+        protected virtual string GetElementDescription(ElementTypes elementType)
         {
             switch (elementType)
             {
@@ -608,7 +609,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        void ClearEffectLabels()
+        protected virtual void ClearEffectLabels()
         {
             for (int i = 0; i < 3; i++)
             {
@@ -616,7 +617,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        void SetEffectLabels(string key, int effectIndex)
+        protected virtual void SetEffectLabels(string key, int effectIndex)
         {
             int labelIndex = effectIndex * 2;
 
@@ -643,7 +644,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             spellEffectLabels[labelIndex + 1].Text = effect.SubGroupName;
         }
 
-        void ShowEffectPopup(IEntityEffect effect)
+        protected virtual void ShowEffectPopup(IEntityEffect effect)
         {
             if (effect == null)
                 return;
@@ -654,7 +655,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             spellEffectPopup.Show();
         }
 
-        TextLabel[] GetEffectLabels(int panelIndex)
+        protected virtual TextLabel[] GetEffectLabels(int panelIndex)
         {
             TextLabel[] labels = new TextLabel[2];
             labels[0] = spellEffectLabels[panelIndex * 2];
@@ -662,22 +663,22 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             return labels;
         }
 
-        Texture2D GetSpellIcon(SpellIcon icon)
+        protected virtual Texture2D GetSpellIcon(SpellIcon icon)
         {
             return DaggerfallUI.Instance.SpellIconCollection.GetSpellIcon(icon);
         }
 
-        Texture2D GetSpellTargetIcon(TargetTypes targetType)
+        protected virtual Texture2D GetSpellTargetIcon(TargetTypes targetType)
         {
             return DaggerfallUI.Instance.SpellIconCollection.GetSpellTargetIcon(targetType);
         }
 
-        Texture2D GetSpellElementIcon(ElementTypes elementType)
+        protected virtual Texture2D GetSpellElementIcon(ElementTypes elementType)
         {
             return DaggerfallUI.Instance.SpellIconCollection.GetSpellElementIcon(elementType);
         }
 
-        int GetTradePrice()
+        protected virtual int GetTradePrice()
         {
             return FormulaHelper.CalculateTradePrice(presentedCost, buildingDiscoveryData.quality, false);
         }
@@ -722,7 +723,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         #region Events
 
-        void SpellEffectPanelClick(BaseScreenComponent sender, Vector2 position)
+        protected virtual void SpellEffectPanelClick(BaseScreenComponent sender, Vector2 position)
         {
             // Get spell settings
             EffectBundleSettings spellSettings;
@@ -757,12 +758,12 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             ShowEffectPopup(effect);
         }
 
-        private void SpellsListBox_OnSelectItem()
+        protected virtual void SpellsListBox_OnSelectItem()
         {
             UpdateSelection();
         }
 
-        private void SpellsListBox_OnUseSelectedItem()
+        protected virtual void SpellsListBox_OnUseSelectedItem()
         {
             // Get spell settings and exit if spell index not found
             EffectBundleSettings spellSettings;
@@ -781,29 +782,29 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        private void SpellsListBox_OnMouseScroll(BaseScreenComponent sender)
+        protected virtual void SpellsListBox_OnMouseScroll(BaseScreenComponent sender)
         {
             spellsListScrollBar.ScrollIndex = spellsListBox.ScrollIndex;
         }
 
-        void SpellsListScrollBar_OnScroll()
+        protected virtual void SpellsListScrollBar_OnScroll()
         {
             spellsListBox.ScrollIndex = spellsListScrollBar.ScrollIndex;
         }
 
-        private void UpArrowButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+        protected virtual void UpArrowButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
             DaggerfallUI.Instance.PlayOneShot(SoundClips.PageTurn);
             spellsListBox.SelectPrevious();
         }
 
-        private void DownArrowButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+        protected virtual void DownArrowButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
             DaggerfallUI.Instance.PlayOneShot(SoundClips.PageTurn);
             spellsListBox.SelectNext();
         }
 
-        void DeleteButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+        protected virtual void DeleteButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
             if (spellsListBox.SelectedIndex == -1)
                 return;
@@ -832,7 +833,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             mb.Show();
         }
 
-        private void DeleteSpellConfirm_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
+        protected virtual void DeleteSpellConfirm_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
         {
             if (deleteSpellIndex != -1 && messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.Yes)
             {
@@ -846,12 +847,12 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             CloseWindow();
         }
 
-        void ExitButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+        protected virtual void ExitButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
             CloseWindow();
         }
 
-        protected void ExitButton_OnKeyboardEvent(BaseScreenComponent sender, Event keyboardEvent)
+        protected virtual void ExitButton_OnKeyboardEvent(BaseScreenComponent sender, Event keyboardEvent)
         {
             if (keyboardEvent.type == EventType.KeyDown)
             {
@@ -864,7 +865,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        void SwapButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+        protected virtual void SwapButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
             if (spellsListBox.SelectedIndex == -1)
                 return;
@@ -899,7 +900,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             mb.Show();
         }
 
-        private void SortSpellsConfirm_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
+        protected virtual void SortSpellsConfirm_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
         {
             if (messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.Yes)
             {
@@ -946,13 +947,13 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             DaggerfallUI.Instance.PlayOneShot(editSpellBook);
         }
 
-        private void SpellIconPanel_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+        protected virtual void SpellIconPanel_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
             DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
             uiManager.PushWindow(iconPicker);
         }
 
-        private void IconPicker_OnClose()
+        protected virtual void IconPicker_OnClose()
         {
             EffectBundleSettings spellSettings;
             if (!GameManager.Instance.PlayerEntity.GetSpell(spellsListBox.SelectedIndex, out spellSettings))
@@ -967,7 +968,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        private void BuyButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+        protected virtual void BuyButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
             DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
             const int tradeMessageBaseId = 260;
@@ -1003,7 +1004,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        private void ConfirmTrade_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
+        protected virtual void ConfirmTrade_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
         {
             if (messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.Yes)
             {

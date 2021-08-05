@@ -423,11 +423,13 @@ namespace DaggerfallWorkshop
                         //miscBillboardBatch.BlockOrigin = blockOrigin;
                     }
 
-                    string blockName = dfUnity.ContentReader.BlockFileReader.CheckName(dfUnity.ContentReader.MapFileReader.GetRmbBlockName(ref location, x, y));
+                    string blockName = dfUnity.ContentReader.BlockFileReader.CheckName(dfUnity.ContentReader.MapFileReader.GetRmbBlockName(location, x, y));
                     GameObject go = GameObjectHelper.CreateRMBBlockGameObject(
                         blockName,
                         x,
                         y,
+                        location.MapTableData.MapId,
+                        location.LocationIndex,
                         dfUnity.Option_RMBGroundPlane,
                         dfUnity.Option_CityBlockPrefab,
                         summary.NatureBillboardBatch,

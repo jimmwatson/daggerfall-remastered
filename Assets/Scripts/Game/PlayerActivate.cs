@@ -42,11 +42,22 @@ namespace DaggerfallWorkshop.Game
         void Activate(RaycastHit hit);
     }
 
+    public class ContainerLootSpawnedEventArgs : System.EventArgs
+    {
+        public LootContainerTypes ContainerType;
+        public ItemCollection Loot;
+    }
+
     /// <summary>
     /// Example class to handle activation of doors, switches, etc. from Fire1 input.
     /// </summary>
     public class PlayerActivate : MonoBehaviour
     {
+        /// <summary>
+        /// When Loot is generated for an activated container, such as a shop shelve or a house container
+        /// </summary>
+        public static System.EventHandler<ContainerLootSpawnedEventArgs> OnLootSpawned;
+
         PlayerGPS playerGPS;
         PlayerEnterExit playerEnterExit;        // Example component to enter/exit buildings
         Camera mainCamera;
@@ -470,7 +481,7 @@ namespace DaggerfallWorkshop.Game
             Transform doorOwner)
         {
             StaticDoor door;
-            if (doors.HasHit(hit.point, out door) || CustomDoor.HasHit(hit, out door))
+            if (CustomDoor.HasHit(hit, out door) || (doors && doors.HasHit(hit.point, out door)))
             {
                 // Check if close enough to activate
                 if (hit.distance > DoorActivationDistance)
@@ -665,15 +676,15 @@ namespace DaggerfallWorkshop.Game
             };
 
             // formatting message is split into 2 parts, depending whether we got any news or not.
-            if (bulletinBoardMessage != string.Empty)
+            if (bulletinBoardMessage != null)
             {
                 tokens.AddRange(new List<TextFile.Token>
                 {
                     new TextFile.Token(TextFile.Formatting.NewLineOffset, null),
                     new TextFile.Token(TextFile.Formatting.Text, string.Empty),
                     new TextFile.Token(TextFile.Formatting.NewLineOffset, null),
-                    new TextFile.Token(TextFile.Formatting.Text, bulletinBoardMessage),
                 });
+                tokens.AddRange(bulletinBoardMessage);
             }
 
             // Display message
@@ -821,7 +832,10 @@ namespace DaggerfallWorkshop.Game
                 case LootContainerTypes.ShopShelves:
                     // Stock shop shelf on first access
                     if (loot.stockedDate < DaggerfallLoot.CreateStockedDate(DaggerfallUnity.Instance.WorldTime.Now))
+                    {
                         loot.StockShopShelf(playerEnterExit.BuildingDiscoveryData);
+                        OnLootSpawned?.Invoke(this, new ContainerLootSpawnedEventArgs { ContainerType = loot.ContainerType, Loot = loot.Items });
+                    }
                     // Open Trade Window if shop is open
                     if (GameManager.Instance.PlayerEnterExit.IsPlayerInsideOpenShop)
                     {
@@ -847,7 +861,10 @@ namespace DaggerfallWorkshop.Game
                     }
                     // Stock house container on first access
                     if (loot.stockedDate < DaggerfallLoot.CreateStockedDate(DaggerfallUnity.Instance.WorldTime.Now))
+                    {
                         loot.StockHouseContainer(playerEnterExit.BuildingDiscoveryData);
+                        OnLootSpawned?.Invoke(this, new ContainerLootSpawnedEventArgs { ContainerType = loot.ContainerType, Loot = loot.Items });
+                    }
                     // If no contents, do nothing
                     if (loot.Items.Count == 0)
                         return;
@@ -1003,7 +1020,7 @@ namespace DaggerfallWorkshop.Game
             Transform doorOwner;
             DaggerfallStaticDoors doors = GetDoors(hit.transform, out doorOwner);
             StaticDoor door;
-            if (doors && doors.HasHit(hit.point, out door) || CustomDoor.HasHit(hit, out door))
+            if (CustomDoor.HasHit(hit, out door) || (doors && doors.HasHit(hit.point, out door)))
             {
                 // Discover building - this is needed to check lock level and transition to interior
                 GameManager.Instance.PlayerGPS.DiscoverBuilding(door.buildingKey);

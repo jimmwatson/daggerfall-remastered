@@ -23,6 +23,7 @@ using DaggerfallWorkshop.Utility;
 using DaggerfallConnect.Save;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
+using DaggerfallWorkshop.Game.Banking;
 
 namespace DaggerfallWorkshop.Game.Formulas
 {
@@ -316,6 +317,10 @@ namespace DaggerfallWorkshop.Game.Formulas
         // Calculate how many uses a skill needs before its value will rise.
         public static int CalculateSkillUsesForAdvancement(int skillValue, int skillAdvancementMultiplier, float careerAdvancementMultiplier, int level)
         {
+            Func<int, int, float, int, int> del;
+            if (TryGetOverride("CalculateSkillUsesForAdvancement", out del))
+                return del(skillValue, skillAdvancementMultiplier, careerAdvancementMultiplier, level);
+
             double levelMod = Math.Pow(1.04, level);
             return (int)Math.Floor((skillValue * skillAdvancementMultiplier * careerAdvancementMultiplier * levelMod * 2 / 5) + 1);
         }
@@ -685,7 +690,7 @@ namespace DaggerfallWorkshop.Game.Formulas
                 // Handle poisoned weapons
                 if (damage > 0 && weapon.poisonType != Poisons.None)
                 {
-                    InflictPoison(target, weapon.poisonType, false);
+                    InflictPoison(attacker, target, weapon.poisonType, false);
                     weapon.poisonType = Poisons.None;
                 }
             }
@@ -839,6 +844,15 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             float cooldown = 10 * (100 - player.Stats.LiveSpeed) + 800;
             return cooldown / classicFrameUpdate;
+        }
+
+        public static int CalculateCasterLevel(DaggerfallEntity caster, IEntityEffect effect)
+        {
+            Func<DaggerfallEntity, IEntityEffect, int> del;
+            if (TryGetOverride("CalculateCasterLevel", out del))
+                return del(caster, effect);
+
+            return caster != null ? caster.Level : 1;
         }
 
         #endregion
@@ -1116,7 +1130,10 @@ namespace DaggerfallWorkshop.Game.Formulas
             if ((amount == 0) && Dice100.SuccessRoll(20))
                 amount = 1;
 
-            item.LowerCondition(amount, owner);
+            if (item.IsEnchanted && owner is PlayerEntity)
+                item.LowerCondition(amount, owner, (owner as PlayerEntity).Items);      // Lower condition and trigger removal for magic items (will not be removed if AllowMagicRepairs enabled)
+            else
+                item.LowerCondition(amount, owner);                                     // Lower condition of mundane item and do not remove if it breaks
         }
 
         public static int CalculateWeaponToHit(DaggerfallUnityItem weapon)
@@ -1244,13 +1261,20 @@ namespace DaggerfallWorkshop.Game.Formulas
         /// <param name="damage">Damage done by the hit</param>
         public static void OnMonsterHit(EnemyEntity attacker, DaggerfallEntity target, int damage)
         {
-            Func<EnemyEntity, DaggerfallEntity, int, bool> del;
+            Action<EnemyEntity, DaggerfallEntity, int> del;
             if (TryGetOverride("OnMonsterHit", out del))
+            {
                 del(attacker, target, damage);
+                return;
+            }
 
-            byte[] diseaseListA = { 1 };
-            byte[] diseaseListB = { 1, 3, 5 };
-            byte[] diseaseListC = { 1, 2, 3, 4, 5, 6, 8, 9, 11, 13, 14 };
+            Diseases[] diseaseListA = { Diseases.Plague };
+            Diseases[] diseaseListB = { Diseases.Plague, Diseases.StomachRot, Diseases.BrainFever };
+            Diseases[] diseaseListC = {
+                Diseases.Plague, Diseases.YellowFever, Diseases.StomachRot, Diseases.Consumption,
+                Diseases.BrainFever, Diseases.SwampRot, Diseases.Cholera, Diseases.Leprosy, Diseases.RedDeath,
+                Diseases.TyphoidFever, Diseases.Dementia
+            };
             float random;
             switch (attacker.CareerIndex)
             {
@@ -1258,12 +1282,12 @@ namespace DaggerfallWorkshop.Game.Formulas
                     // In classic rat can only give plague (diseaseListA), but DF Chronicles says plague, stomach rot and brain fever (diseaseListB).
                     // Don't know which was intended. Using B since it has more variety.
                     if (Dice100.SuccessRoll(5))
-                        InflictDisease(target, diseaseListB);
+                        InflictDisease(attacker, target, diseaseListB);
                     break;
                 case (int)MonsterCareers.GiantBat:
                     // Classic uses 2% chance, but DF Chronicles says 5% chance. Not sure which was intended.
                     if (Dice100.SuccessRoll(2))
-                        InflictDisease(target, diseaseListB);
+                        InflictDisease(attacker, target, diseaseListB);
                     break;
                 case (int)MonsterCareers.Spider:
                 case (int)MonsterCareers.GiantScorpion:
@@ -1290,7 +1314,7 @@ namespace DaggerfallWorkshop.Game.Formulas
                     }
                     break;
                 case (int)MonsterCareers.Nymph:
-                    FatigueDamage(target, damage);
+                    FatigueDamage(attacker, target, damage);
                     break;
                 case (int)MonsterCareers.Wereboar:
                     random = UnityEngine.Random.Range(0f, 100f);
@@ -1306,11 +1330,11 @@ namespace DaggerfallWorkshop.Game.Formulas
                     // Nothing in classic. DF Chronicles says 2% chance of disease, which seems like it was probably intended.
                     // Diseases listed in DF Chronicles match those of mummy (except missing cholera, probably a mistake)
                     if (Dice100.SuccessRoll(2))
-                        InflictDisease(target, diseaseListC);
+                        InflictDisease(attacker, target, diseaseListC);
                     break;
                 case (int)MonsterCareers.Mummy:
                     if (Dice100.SuccessRoll(5))
-                        InflictDisease(target, diseaseListC);
+                        InflictDisease(attacker, target, diseaseListC);
                     break;
                 case (int)MonsterCareers.Vampire:
                 case (int)MonsterCareers.VampireAncient:
@@ -1324,20 +1348,34 @@ namespace DaggerfallWorkshop.Game.Formulas
                     }
                     else if (random <= 2.0f)
                     {
-                        InflictDisease(target, diseaseListA);
+                        InflictDisease(attacker, target, diseaseListA);
                     }
                     break;
                 case (int)MonsterCareers.Lamia:
                     // Nothing in classic, but DF Chronicles says 2 pts of fatigue damage per health damage
-                    FatigueDamage(target, damage);
+                    FatigueDamage(attacker, target, damage);
                     break;
                 default:
                     break;
             }
         }
 
-        public static void InflictPoison(DaggerfallEntity target, Poisons poisonType, bool bypassResistance)
+        /// <summary>
+        /// Inflict a classic poison onto entity.
+        /// </summary>
+        /// <param name="attacker">Source entity. Can be the same as target</param>
+        /// <param name="target">Target entity</param>
+        /// <param name="poisonType">Classic poison type</param>
+        /// <param name="bypassResistance">Whether it should bypass resistances</param>
+        public static void InflictPoison(DaggerfallEntity attacker, DaggerfallEntity target, Poisons poisonType, bool bypassResistance)
         {
+            Action<DaggerfallEntity, DaggerfallEntity, Poisons, bool> del;
+            if(TryGetOverride("InflictPoison", out del))
+            {
+                del(attacker, target, poisonType, bypassResistance);
+                return;
+            }
+
             // Target must have an entity behaviour and effect manager
             EntityEffectManager effectManager = null;
             if (target.EntityBehaviour != null)
@@ -1403,6 +1441,10 @@ namespace DaggerfallWorkshop.Game.Formulas
 
         public static int SavingThrow(DFCareer.Elements elementType, DFCareer.EffectFlags effectFlags, DaggerfallEntity target, int modifier)
         {
+            Func<DFCareer.Elements, DFCareer.EffectFlags, DaggerfallEntity, int, int> del;
+            if (TryGetOverride("SavingThrow", out del))
+                return del(elementType, effectFlags, target, modifier);
+
             // Handle resistances granted by magical effects
             if (target.HasResistanceFlag(elementType))
             {
@@ -1605,17 +1647,21 @@ namespace DaggerfallWorkshop.Game.Formulas
             return result;
         }
 
-        #endregion
-
-        #region Enemies
-
         /// <summary>
         /// Inflict a classic disease onto player.
         /// </summary>
+        /// <param name="attacker">Source entity. Can be the same as target</param>
         /// <param name="target">Target entity - must be player.</param>
         /// <param name="diseaseList">Array of disease indices matching Diseases enum.</param>
-        public static void InflictDisease(DaggerfallEntity target, byte[] diseaseList)
+        public static void InflictDisease(DaggerfallEntity attacker, DaggerfallEntity target, Diseases[] diseaseList)
         {
+            Action<DaggerfallEntity, DaggerfallEntity, Diseases[]> del;
+            if (TryGetOverride("InflictDisease", out del))
+            {
+                del(attacker, target, diseaseList);
+                return;
+            }
+
             // Must have a valid disease list
             if (diseaseList == null || diseaseList.Length == 0 || target.EntityBehaviour.EntityType != EntityTypes.Player)
                 return;
@@ -1634,11 +1680,9 @@ namespace DaggerfallWorkshop.Game.Formulas
 
                 // Select a random disease from disease array and validate range
                 int diseaseIndex = UnityEngine.Random.Range(0, diseaseList.Length);
-                if (diseaseIndex < 0 || diseaseIndex > 16)
-                    return;
 
                 // Infect player
-                Diseases diseaseType = (Diseases)diseaseList[diseaseIndex];
+                Diseases diseaseType = diseaseList[diseaseIndex];
                 EntityEffectBundle bundle = GameManager.Instance.PlayerEffectManager.CreateDisease(diseaseType);
                 GameManager.Instance.PlayerEffectManager.AssignBundle(bundle, AssignBundleFlags.BypassSavingThrows);
 
@@ -1646,8 +1690,15 @@ namespace DaggerfallWorkshop.Game.Formulas
             }
         }
 
-        public static void FatigueDamage(DaggerfallEntity target, int damage)
+        public static void FatigueDamage(EnemyEntity attacker, DaggerfallEntity target, int damage)
         {
+            Action<EnemyEntity, DaggerfallEntity, int> del;
+            if (TryGetOverride("FatigueDamage", out del))
+            {
+                del(attacker, target, damage);
+                return;
+            }
+
             // In classic, nymphs do 10-30 fatigue damage per hit, and lamias don't do any.
             // DF Chronicles says nymphs have "Energy Leech", which is a spell in
             // the game and not what they use, and for lamias "Every 1 pt of health damage = 2 pts of fatigue damage".
@@ -1661,6 +1712,10 @@ namespace DaggerfallWorkshop.Game.Formulas
             // and then wake up, according to DF Chronicles. This doesn't work correctly in classic. Classic does advance
             // time 14 days but the player dies like normal because of the "collapse from exhaustion near monsters = die" code.
         }
+
+        #endregion
+
+        #region Enemies
 
         // Generates health for enemy classes based on level and class
         public static int RollEnemyClassMaxHealth(int level, int hitPointsPerLevel)
@@ -1772,29 +1827,6 @@ namespace DaggerfallWorkshop.Game.Formulas
             return 0;
         }
 
-        public static float BonusChanceToKnowWhereIs(float bonusPerBlockLess = 0.0078f)
-        {
-            const int maxArea = 64;
-
-            // Must be in a location
-            if (!GameManager.Instance.PlayerGPS.HasCurrentLocation)
-                return 0;
-
-            // Get area of current location
-            DFLocation location = GameManager.Instance.PlayerGPS.CurrentLocation;
-            int locationArea = location.Exterior.ExteriorData.Width * location.Exterior.ExteriorData.Height;
-
-            // The largest possible location has an area of 64 (e.g. Daggerfall/Wayrest/Sentinel)
-            // The smallest possible location has an area of 1 (e.g. a tavern town)
-            // In a big city NPCs could be ignorant of all buildings, but in a small town it's unlikely they don't know the local tavern or smith
-            // So we apply a bonus that INCREASES the more city area size DECREASES
-            // With default inputs, a tiny 1x1 town NPC will get a +0.4914 to the default 0.5 chance for a total of 0.9914 chance to know building
-            // This is a big help as small towns also have less NPCs, and it gets frustrating when multiple NPCs don't knows where something is
-            float bonus = (maxArea - locationArea) * bonusPerBlockLess;
-
-            return bonus;
-        }
-
         #endregion
 
         #region Commerce
@@ -1867,6 +1899,10 @@ namespace DaggerfallWorkshop.Game.Formulas
 
         public static int CalculateItemRepairTime(int condition, int max)
         {
+            Func<int, int, int> del;
+            if (TryGetOverride("CalculateItemRepairTime", out del))
+                return del(condition, max);
+
             int damage = max - condition;
             int repairTime = (damage * DaggerfallDateTime.SecondsPerDay / 1000);
             return Mathf.Max(repairTime, DaggerfallDateTime.SecondsPerDay);
@@ -1874,6 +1910,10 @@ namespace DaggerfallWorkshop.Game.Formulas
 
         public static int CalculateItemIdentifyCost(int baseItemValue, IGuild guild)
         {
+            Func<int, IGuild, int> del;
+            if (TryGetOverride("CalculateItemIdentifyCost", out del))
+                return del(baseItemValue, guild);
+
             // Free on Witches Festival
             uint minutes = DaggerfallUnity.Instance.WorldTime.DaggerfallDateTime.ToClassicDaggerfallTime();
             PlayerGPS gps = GameManager.Instance.PlayerGPS;
@@ -1937,6 +1977,26 @@ namespace DaggerfallWorkshop.Game.Formulas
             }
 
             return amount;
+        }
+
+        public static int CalculateMaxBankLoan()
+        {
+            Func<int> del;
+            if (TryGetOverride("CalculateMaxBankLoan", out del))
+                return del();
+
+            //unoffical wiki says max possible loan is 1,100,000 but testing indicates otherwise
+            //rep. doesn't seem to effect cap, it's just level * 50k
+            return GameManager.Instance.PlayerEntity.Level * DaggerfallBankManager.loanMaxPerLevel;
+        }
+
+        public static int CalculateBankLoanRepayment(int amount, int regionIndex)
+        {
+            Func<int, int, int> del;
+            if (TryGetOverride("CalculateBankLoanRepayment", out del))
+                return del(amount, regionIndex);
+
+            return (int)(amount + amount * .1);
         }
 
         public static int ApplyRegionalPriceAdjustment(int cost)
@@ -2016,28 +2076,13 @@ namespace DaggerfallWorkshop.Game.Formulas
                 if (del(item))
                     return true; // Only return if override returns true
 
-            if (item.IsIngredient || item.IsPotion ||
+            if (item.IsIngredient || item.IsPotion || (item.ItemGroup == ItemGroups.Books) ||
                 item.IsOfTemplate(ItemGroups.Currency, (int)Currency.Gold_pieces) ||
                 item.IsOfTemplate(ItemGroups.Weapons, (int)Weapons.Arrow) ||
                 item.IsOfTemplate(ItemGroups.UselessItems2, (int)UselessItems2.Oil))
                 return true;
             else
                 return false;
-        }
-
-        /// <summary>
-        /// Allows loot found in containers and enemy corpses to be modified.
-        /// </summary>
-        /// <param name="lootItems">An array of the loot items</param>
-        /// <returns>The number of items modified.</returns>
-        public static int ModifyFoundLootItems(ref DaggerfallUnityItem[] lootItems)
-        {
-            Func<DaggerfallUnityItem[], int> del;
-            if (TryGetOverride("ModifyFoundLootItems", out del))
-                return del(lootItems);
-
-            // DFU does no post-processing of loot items hence report zero changes, this is solely for mods to override.
-            return 0;
         }
 
         /// <summary>
@@ -2107,6 +2152,21 @@ namespace DaggerfallWorkshop.Game.Formulas
         #region Spell Costs
 
         /// <summary>
+        /// A structure containing both the gold and spell point cost of either a single effect, or an entire spell
+        /// </summary>
+        public struct SpellCost
+        {
+            public int goldCost;
+            public int spellPointCost;
+
+            public void Deconstruct(out int gcost, out int spcost)
+            {
+                gcost = goldCost;
+                spcost = spellPointCost;
+            }
+        }
+
+        /// <summary>
         /// Performs complete gold and spellpoint costs for an array of effects.
         /// Also calculates multipliers for target type.
         /// </summary>
@@ -2116,16 +2176,21 @@ namespace DaggerfallWorkshop.Game.Formulas
         /// <param name="totalSpellPointCostOut">Total spellpoint cost out.</param>
         /// <param name="casterEntity">Caster entity. Assumed to be player if null.</param>
         /// <param name="minimumCastingCost">Spell point always costs minimum (e.g. from vampirism). Do not set true for reflection/absorption cost calculations.</param>
-        public static void CalculateTotalEffectCosts(EffectEntry[] effectEntries, TargetTypes targetType, out int totalGoldCostOut, out int totalSpellPointCostOut, DaggerfallEntity casterEntity = null, bool minimumCastingCost = false)
+        public static SpellCost CalculateTotalEffectCosts(EffectEntry[] effectEntries, TargetTypes targetType, DaggerfallEntity casterEntity = null, bool minimumCastingCost = false)
         {
+            Func<EffectEntry[], TargetTypes, DaggerfallEntity, bool, SpellCost> del;
+            if (TryGetOverride("CalculateTotalEffectCosts", out del))
+                return del(effectEntries, targetType, casterEntity, minimumCastingCost);
+
             const int castCostFloor = 5;
 
-            totalGoldCostOut = 0;
-            totalSpellPointCostOut = 0;
+            SpellCost totalCost;
+            totalCost.goldCost = 0;
+            totalCost.spellPointCost = 0;
 
             // Must have effect entries
             if (effectEntries == null || effectEntries.Length == 0)
-                return;
+                return totalCost;
 
             // Add costs for each active effect slot
             for (int i = 0; i < effectEntries.Length; i++)
@@ -2133,49 +2198,49 @@ namespace DaggerfallWorkshop.Game.Formulas
                 if (string.IsNullOrEmpty(effectEntries[i].Key))
                     continue;
 
-                int goldCost, spellPointCost;
-                CalculateEffectCosts(effectEntries[i], out goldCost, out spellPointCost, casterEntity);
-                totalGoldCostOut += goldCost;
-                totalSpellPointCostOut += spellPointCost;
+                (int goldCost, int spellPointCost) = CalculateEffectCosts(effectEntries[i], casterEntity);
+                totalCost.goldCost += goldCost;
+                totalCost.spellPointCost += spellPointCost;
             }
 
             // Multipliers for target type
-            totalGoldCostOut = ApplyTargetCostMultiplier(totalGoldCostOut, targetType);
-            totalSpellPointCostOut = ApplyTargetCostMultiplier(totalSpellPointCostOut, targetType);
+            totalCost.goldCost = ApplyTargetCostMultiplier(totalCost.goldCost, targetType);
+            totalCost.spellPointCost = ApplyTargetCostMultiplier(totalCost.spellPointCost, targetType);
 
             // Set vampire spell cost
             if (minimumCastingCost)
-                totalSpellPointCostOut = castCostFloor;
+                totalCost.spellPointCost = castCostFloor;
 
             // Enforce minimum
-            if (totalSpellPointCostOut < castCostFloor)
-                totalSpellPointCostOut = castCostFloor;
+            if (totalCost.spellPointCost < castCostFloor)
+                totalCost.spellPointCost = castCostFloor;
+
+            return totalCost;
         }
 
         /// <summary>
         /// Calculate effect costs from an EffectEntry.
         /// </summary>
-        public static void CalculateEffectCosts(EffectEntry effectEntry, out int goldCostOut, out int spellPointCostOut, DaggerfallEntity casterEntity = null)
+        public static SpellCost CalculateEffectCosts(EffectEntry effectEntry, DaggerfallEntity casterEntity = null)
         {
-            goldCostOut = 0;
-            spellPointCostOut = 0;
-
             // Get effect template
             IEntityEffect effectTemplate = GameManager.Instance.EntityEffectBroker.GetEffectTemplate(effectEntry.Key);
             if (effectTemplate == null)
-                return;
+                return new SpellCost { goldCost = 0, spellPointCost = 0 };
 
-            CalculateEffectCosts(effectTemplate, effectEntry.Settings, out goldCostOut, out spellPointCostOut, casterEntity);
+            return CalculateEffectCosts(effectTemplate, effectEntry.Settings, casterEntity);
         }
 
         /// <summary>
         /// Calculates effect costs from an IEntityEffect and custom settings.
         /// </summary>
-        public static void CalculateEffectCosts(IEntityEffect effect, EffectSettings settings, out int goldCostOut, out int spellPointCostOut, DaggerfallEntity casterEntity = null)
+        public static SpellCost CalculateEffectCosts(IEntityEffect effect, EffectSettings settings, DaggerfallEntity casterEntity = null)
         {
-            int activeComponents = 0;
-            goldCostOut = 0;
-            spellPointCostOut = 0;
+            Func<IEntityEffect, EffectSettings, DaggerfallEntity, SpellCost> del;
+            if(TryGetOverride("CalculateEffectCosts", out del))
+                return del(effect, settings, casterEntity);
+
+            bool activeComponents = false;            
 
             // Get related skill
             int skillValue = 0;
@@ -2194,9 +2259,8 @@ namespace DaggerfallWorkshop.Game.Formulas
             int durationGoldCost = 0;
             if (effect.Properties.SupportDuration)
             {
-                activeComponents++;
-                GetEffectComponentCosts(
-                    out durationGoldCost,
+                activeComponents = true;
+                durationGoldCost = GetEffectComponentCosts(
                     effect.Properties.DurationCosts,
                     settings.DurationBase,
                     settings.DurationPlus,
@@ -2210,9 +2274,8 @@ namespace DaggerfallWorkshop.Game.Formulas
             int chanceGoldCost = 0;
             if (effect.Properties.SupportChance)
             {
-                activeComponents++;
-                GetEffectComponentCosts(
-                    out chanceGoldCost,
+                activeComponents = true;
+                chanceGoldCost = GetEffectComponentCosts(
                     effect.Properties.ChanceCosts,
                     settings.ChanceBase,
                     settings.ChancePlus,
@@ -2226,11 +2289,10 @@ namespace DaggerfallWorkshop.Game.Formulas
             int magnitudeGoldCost = 0;
             if (effect.Properties.SupportMagnitude)
             {
-                activeComponents++;
+                activeComponents = true;
                 int magnitudeBase = (settings.MagnitudeBaseMax + settings.MagnitudeBaseMin) / 2;
                 int magnitudePlus = (settings.MagnitudePlusMax + settings.MagnitudePlusMin) / 2;
-                GetEffectComponentCosts(
-                    out magnitudeGoldCost,
+                magnitudeGoldCost = GetEffectComponentCosts(
                     effect.Properties.MagnitudeCosts,
                     magnitudeBase,
                     magnitudePlus,
@@ -2244,18 +2306,24 @@ namespace DaggerfallWorkshop.Game.Formulas
             // This gives the same casting cost outcome as classic and supplies a reasonable gold cost
             // Note: Classic does not assign a gold cost when a zero-component effect is the only effect present, which seems like a bug
             int fudgeGoldCost = 0;
-            if (activeComponents == 0)
-                GetEffectComponentCosts(out fudgeGoldCost, BaseEntityEffect.MakeEffectCosts(60, 100, 160), 1, 1, 1, skillValue);
+            if (!activeComponents)
+                fudgeGoldCost = GetEffectComponentCosts(BaseEntityEffect.MakeEffectCosts(60, 100, 160), 1, 1, 1, skillValue);
 
             // Add gold costs together and calculate spellpoint cost from the result
-            goldCostOut = durationGoldCost + chanceGoldCost + magnitudeGoldCost + fudgeGoldCost;
-            spellPointCostOut = goldCostOut * (110 - skillValue) / 400;
+            SpellCost effectCost;
+            effectCost.goldCost = durationGoldCost + chanceGoldCost + magnitudeGoldCost + fudgeGoldCost;
+            effectCost.spellPointCost = effectCost.goldCost * (110 - skillValue) / 400;
 
             //Debug.LogFormat("Costs: gold {0} spellpoints {1}", finalGoldCost, finalSpellPointCost);
+            return effectCost;
         }
 
         public static int ApplyTargetCostMultiplier(int cost, TargetTypes targetType)
         {
+            Func<int, TargetTypes, int> del;
+            if (TryGetOverride("ApplyTargetCostMultiplier", out del))
+                return del(cost, targetType);
+
             switch (targetType)
             {
                 default:
@@ -2277,8 +2345,7 @@ namespace DaggerfallWorkshop.Game.Formulas
             return cost;
         }
 
-        static void GetEffectComponentCosts(
-            out int goldCost,
+        static int GetEffectComponentCosts(
             EffectCosts costs,
             int starting,
             int increase,
@@ -2286,7 +2353,7 @@ namespace DaggerfallWorkshop.Game.Formulas
             int skillValue)
         {
             //Calculate effect gold cost, spellpoint cost is calculated from gold cost after adding up for duration, chance and magnitude
-            goldCost = trunc(costs.OffsetGold + costs.CostA * starting + costs.CostB * trunc(increase / perLevel));
+            return trunc(costs.OffsetGold + costs.CostA * starting + costs.CostB * trunc(increase / perLevel));
         }
 
         /// <summary>

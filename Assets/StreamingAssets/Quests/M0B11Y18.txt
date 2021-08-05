@@ -331,9 +331,9 @@ Item _queenreward_ magic_item
 Item _traitorreward_ diamond
 
 Person _ruler_ named Queen_Akorithi atHome
-Person _questgiver_ group Questor male
-Person _target_ face 1 factiontype Knightly_Guard
-Person _enemy_ face 1 group Resident2
+Person _questgiver_ group Questor
+Person _target_ face 1 factiontype Knightly_Guard remote
+Person _enemy_ face 1 group Resident2 remote
 Person _traitor_ face 1 named Lord_K'avar
 
 Place _L.00_ remote dungeon
@@ -432,7 +432,7 @@ _S.12_ task:
 
 _conhouse_ task:
 	when _S.00_ and not _S.12_ 
-	create foe _F.03_ every 10 minutes 100 times with 10% success 
+	create foe _F.03_ every 30 minutes 5 times with 10% success 
 
 _S.14_ task:
 	injured _F.03_ 

@@ -1744,7 +1744,7 @@ namespace DaggerfallWorkshop.Game.Entity
                                     !factionData.IsFaction2AnAllyOfFaction1(factionData.FactionDict[key].enemy1, random.id) &&
                                     !factionData.IsFaction2AnAllyOfFaction1(factionData.FactionDict[key].enemy2, random.id) &&
                                     !factionData.IsFaction2AnAllyOfFaction1(factionData.FactionDict[key].enemy3, random.id) &&
-                                    factionData.GetFaction2ARelationToFaction1(factionData.FactionDict[key].id, random.id) == -1)
+                                    factionData.GetFaction2RelationToFaction1(factionData.FactionDict[key].id, random.id) == -1)
                                 {
                                     int powerSum = factionPowerMod + factionData.FactionDict[key].rulerPowerBonus;
                                     if (Dice100.SuccessRoll((powerSum + factionData.GetNumberOfCommonAlliesAndEnemies(factionData.FactionDict[key].id, random.id) * 3) / 5))
@@ -1878,7 +1878,7 @@ namespace DaggerfallWorkshop.Game.Entity
                                     !factionData.IsFaction2AnAllyOfFaction1(factionData.FactionDict[key].enemy2, random.id) &&
                                     !factionData.IsFaction2AnAllyOfFaction1(factionData.FactionDict[key].enemy3, random.id))
                                 {
-                                    int relation = factionData.GetFaction2ARelationToFaction1(factionData.FactionDict[key].id, random.id);
+                                    int relation = factionData.GetFaction2RelationToFaction1(factionData.FactionDict[key].id, random.id);
                                     if (relation == -1 || relation == 2)
                                     {
                                         int mod = 0;
@@ -2362,6 +2362,10 @@ namespace DaggerfallWorkshop.Game.Entity
             // Subsequent exhaustion events would otherwise stack on popup per poison round remaining
             // This can make player think game has stalled until they click through all stacked popups
             if (displayingExhaustedPopup)
+                return;
+
+            // Do nothing if player already dead - prevents popup repeat if OnExhausted event is queued multiple times just prior to death
+            if (CurrentHealth == 0)
                 return;
 
             bool enemiesNearby = GameManager.Instance.AreEnemiesNearby();

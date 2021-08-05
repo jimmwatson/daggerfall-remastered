@@ -60,6 +60,7 @@ namespace DaggerfallWorkshop
         bool restartAnims = true;
         bool freezeAnims = false;
         bool animReversed = false;
+        int frameSpeedDivisor = 1;
 
         public MobileUnitSummary Summary
         {
@@ -75,6 +76,12 @@ namespace DaggerfallWorkshop
         public int CurrentFrame
         {
             get { return currentFrame; }
+        }
+
+        public override int FrameSpeedDivisor
+        {
+            get { return frameSpeedDivisor; }
+            set { frameSpeedDivisor = (value < 1) ? 1 : value; }
         }
 
         public override bool DoMeleeDamage
@@ -471,7 +478,11 @@ namespace DaggerfallWorkshop
                 {
                     // Update enemy and fps
                     OrientEnemy(lastOrientation);
-                    fps = summary.StateAnims[lastOrientation].FramePerSecond;
+                    fps = summary.StateAnims[lastOrientation].FramePerSecond / FrameSpeedDivisor;
+
+                    // Enforce a lower limit on animation speed when using a custom FrameSpeedDivisor
+                    if (FrameSpeedDivisor > 1 && fps < 4)
+                        fps = 4;
 
                     bool doingAttackAnimation = (summary.EnemyState == MobileStates.PrimaryAttack ||
                         summary.EnemyState == MobileStates.RangedAttack1 ||
@@ -588,7 +599,11 @@ namespace DaggerfallWorkshop
         {
             // Open texture file
             string path = Path.Combine(dfUnity.Arena2Path, TextureFile.IndexToFileName(archive));
-            TextureFile textureFile = new TextureFile(path, FileUsage.UseMemory, true);
+            TextureFile textureFile = new TextureFile();
+
+            // Might be updated later through texture replacement
+            if (!textureFile.Load(path, FileUsage.UseMemory, true))
+                return;
 
             // Cache size and scale for each record
             summary.RecordSizes = new Vector2[textureFile.RecordCount];
@@ -679,6 +694,37 @@ namespace DaggerfallWorkshop
                 0,
                 false,
                 true);
+
+            // Update cached record values in case of non-classic texture
+            if (summary.RecordSizes == null || summary.RecordSizes.Length == 0)
+            {
+                if (summary.ImportedTextures.Albedo != null && summary.ImportedTextures.Albedo.Length > 0)
+                {
+                    int recordCount = summary.ImportedTextures.Albedo.Length;
+
+                    // Cache size and scale for each record
+                    summary.RecordSizes = new Vector2[recordCount];
+                    summary.RecordFrames = new int[recordCount];
+                    for (int i = 0; i < recordCount; i++)
+                    {
+                        // Get size and scale of this texture
+                        Texture2D firstFrame = summary.ImportedTextures.Albedo[i][0];
+
+                        Vector2 size = new Vector2(firstFrame.width, firstFrame.height);
+
+                        // Set optional scale
+                        TextureReplacement.SetBillboardScale(archive, i, ref size);
+
+                        // Store final size and frame count
+                        summary.RecordSizes[i] = size * MeshReader.GlobalScale;
+                        summary.RecordFrames[i] = summary.ImportedTextures.Albedo[i].Length;
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"Texture archive {archive} has no valid records");
+                }
+            }
 
             // Set new enemy material
             GetComponent<MeshRenderer>().sharedMaterial = material;

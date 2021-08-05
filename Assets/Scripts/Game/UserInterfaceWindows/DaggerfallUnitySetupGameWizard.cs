@@ -257,7 +257,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         void CreateBackdrop()
         {
             // Add a block into the scene
-            GameObjectHelper.CreateRMBBlockGameObject("CUSTAA06.RMB", 0, 0);
+            GameObjectHelper.CreateRMBBlockGameObject("CUSTAA06.RMB", 0, 0, 0, 0);
             backdropCreated = true;
 
             // Hack to keep background texture

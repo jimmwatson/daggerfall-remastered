@@ -1,4 +1,4 @@
-﻿// Project:         Daggerfall Tools For Unity
+// Project:         Daggerfall Tools For Unity
 // Copyright:       Copyright (C) 2009-2021 Daggerfall Workshop
 // Web Site:        http://www.dfworkshop.net
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -22,8 +22,6 @@ namespace DaggerfallWorkshop.Utility
 {
     /// <summary>
     /// Moves world back to origin so central player terrain is at 0,0,0.
-    /// Currently only works on X-Z plane.
-    /// Need to review floating Y with serialization/deserialization process.
     /// </summary>
     public class FloatingOrigin : MonoBehaviour
     {

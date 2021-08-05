@@ -35,7 +35,7 @@ namespace DaggerfallWorkshop.Game
         UnderwaterFog underwaterFog;
         DaggerfallUnity dfUnity;
         CharacterController controller;
-        bool isCreatingDungeonBaseGameObjects = false;
+        bool isCreatingDungeonObjects = false;
         bool isPlayerInside = false;
         bool isPlayerInsideDungeon = false;
         bool isPlayerInsideDungeonCastle = false;
@@ -99,10 +99,10 @@ namespace DaggerfallWorkshop.Game
         /// <summary>
         /// True when GameObjectHelper is creating the RDB Base Game Objects
         /// </summary>
-        public bool IsCreatingDungeonBaseGameObjects
+        public bool IsCreatingDungeonObjects
         {
-            get { return isCreatingDungeonBaseGameObjects; }
-            set { isCreatingDungeonBaseGameObjects = value; }
+            get { return isCreatingDungeonObjects; }
+            set { isCreatingDungeonObjects = value; }
         }
 
         /// <summary>
@@ -222,6 +222,12 @@ namespace DaggerfallWorkshop.Game
         {
             get { return isRespawning; }
         }
+
+        /// <summary>
+        /// True when player just teleported into a dungeon via Teleport spell, otherwise false.
+        /// Flag is only raised by Teleport spell and is lowered any time player exits a dungeon or interior, or teleports to a non-dungeon anchor.
+        /// </summary>
+        public bool PlayerTeleportedIntoDungeon { get; set; }
 
         /// <summary>
         /// Gets current player dungeon.
@@ -856,6 +862,7 @@ namespace DaggerfallWorkshop.Game
 
             // Player is now outside building
             isPlayerInside = false;
+            PlayerTeleportedIntoDungeon = false;
             buildingType = DFLocation.BuildingTypes.None;
             factionID = 0;
 
@@ -1175,6 +1182,7 @@ namespace DaggerfallWorkshop.Game
             isPlayerInsideDungeonCastle = false;
             lastPlayerDungeonBlockIndex = -1;
             playerDungeonBlockData = new DFLocation.DungeonBlock();
+            PlayerTeleportedIntoDungeon = false;
 
             // Position player to door
             world.SetAutoReposition(StreamingWorld.RepositionMethods.DungeonEntrance, Vector3.zero);

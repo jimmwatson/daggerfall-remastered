@@ -22,11 +22,34 @@ using DaggerfallWorkshop.Game.Items;
 namespace DaggerfallWorkshop.Game.Entity
 {
     /// <summary>
+    /// The parameters involved in creating an enemy loot pile
+    /// </summary>
+    public class EnemyLootSpawnedEventArgs : System.EventArgs
+    {
+        /// <summary>
+        /// The Mobile object used for the enemy
+        /// </summary>
+        public MobileEnemy MobileEnemy { get; set; }
+
+        /// <summary>
+        /// The Career template of the enemy
+        /// </summary>
+        public DFCareer EnemyCareer { get; set; }
+
+        /// <summary>
+        /// The collection containing all the items of the loot pile. New items can be added
+        /// </summary>
+        public ItemCollection Items { get; set; }
+    }
+
+    /// <summary>
     /// Implements DaggerfallEntity with properties specific to enemies.
     /// </summary>
     public class EnemyEntity : DaggerfallEntity
     {
         #region Fields
+
+        public static System.EventHandler<EnemyLootSpawnedEventArgs> OnLootSpawned;
 
         int careerIndex = -1;
         EntityTypes entityType = EntityTypes.None;
@@ -223,7 +246,33 @@ namespace DaggerfallWorkshop.Game.Entity
         /// </summary>
         public void SetEnemyCareer(MobileEnemy mobileEnemy, EntityTypes entityType)
         {
-            if (entityType == EntityTypes.EnemyMonster)
+            // Try custom career first
+            career = GetCustomCareerTemplate(mobileEnemy.ID);
+
+            if (career != null)
+            {
+                // Custom enemy
+                careerIndex = mobileEnemy.ID;
+                stats.SetPermanentFromCareer(career);
+
+                if (entityType == EntityTypes.EnemyMonster)
+                {
+                    // Default like a monster
+                    level = mobileEnemy.Level;
+                    maxHealth = Random.Range(mobileEnemy.MinHealth, mobileEnemy.MaxHealth + 1);
+                    for (int i = 0; i < ArmorValues.Length; i++)
+                    {
+                        ArmorValues[i] = (sbyte)(mobileEnemy.ArmorValue * 5);
+                    }
+                }
+                else
+                {
+                    // Default like a class enemy
+                    level = GameManager.Instance.PlayerEntity.Level;
+                    maxHealth = FormulaHelper.RollEnemyClassMaxHealth(level, career.HitPointsPerLevel);
+                }
+            }
+            else if (entityType == EntityTypes.EnemyMonster)
             {
                 careerIndex = mobileEnemy.ID;
                 career = GetMonsterCareerTemplate((MonsterCareers)careerIndex);
@@ -247,7 +296,7 @@ namespace DaggerfallWorkshop.Game.Entity
                 // Enemy class is levelled to player and uses similar health rules
                 // City guards are 3 to 6 levels above the player
                 level = GameManager.Instance.PlayerEntity.Level;
-                if (careerIndex == (int)MobileTypes.Knight_CityWatch)
+                if (careerIndex == (int)MobileTypes.Knight_CityWatch - 128)
                     level += UnityEngine.Random.Range(3, 7);
 
                 maxHealth = FormulaHelper.RollEnemyClassMaxHealth(level, career.HitPointsPerLevel);
@@ -345,6 +394,8 @@ namespace DaggerfallWorkshop.Game.Entity
                 // Chance of adding potion recipe
                 DaggerfallLoot.RandomlyAddPotionRecipe(2, items);
             }
+
+            OnLootSpawned?.Invoke(this, new EnemyLootSpawnedEventArgs { MobileEnemy = mobileEnemy, EnemyCareer = career, Items = items });
 
             FillVitalSigns();
         }

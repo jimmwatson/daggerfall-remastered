@@ -50,6 +50,8 @@ namespace DaggerfallWorkshop.Game
 
         void FixedUpdate()
         {
+            const int speedFloor = 8;
+
             // Unable to attack if AI disabled or paralyzed
             if (GameManager.Instance.DisableAI || entityBehaviour.Entity.IsParalyzed)
                 return;
@@ -64,8 +66,15 @@ namespace DaggerfallWorkshop.Game
             if (MeleeTimer < 0)
                 MeleeTimer = 0;
 
+            // Get entity speed and enforce a lower limit so Drain Speed does not prevent attack ever firing
             EnemyEntity entity = entityBehaviour.Entity as EnemyEntity;
             int speed = entity.Stats.LiveSpeed;
+            if (speed < speedFloor)
+                speed = speedFloor;
+
+            // Slow down enemy frame rate based on floored speed value
+            // If enemy is still at maximum speed then divisor is 1 and will experience no change to frame rate
+            mobile.FrameSpeedDivisor = entity.Stats.PermanentSpeed / speed;
 
             // Note: Speed comparison here is reversed from classic. Classic's way makes fewer attack
             // attempts at higher speeds, so it seems backwards.

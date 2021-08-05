@@ -3634,12 +3634,24 @@ MonoBehaviour:
     m_Localized: Nord
     m_Metadata:
       m_Items: []
+  - m_Id: 813
+    m_Localized: 'Note: Some changes may not be applied until you restart the game.'
+    m_Metadata:
+      m_Items: []
   - m_Id: 29516644352
     m_Localized: temple
     m_Metadata:
       m_Items: []
   - m_Id: 9244149909045248
     m_Localized: Unknown Powers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 81196844510765056
+    m_Localized: This cannot be repaired.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 89174439800094720
+    m_Localized: You never awaken.
     m_Metadata:
       m_Items: []
   references:

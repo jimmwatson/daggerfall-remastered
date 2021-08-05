@@ -25,6 +25,7 @@ using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
 using UnityEngine.Localization.Settings;
+using static DaggerfallWorkshop.Game.UserInterface.BaseScreenComponent;
 
 namespace DaggerfallWorkshop.Game
 {
@@ -61,6 +62,10 @@ namespace DaggerfallWorkshop.Game
         public static Color DaggerfallPrisonDaysUntilFreedomColor = new Color32(232, 196, 76, 255);
         public static Color DaggerfallPrisonDaysUntilFreedomShadowColor = new Color32(48, 36, 20, 255);
         public static Color DaggerfallInfoPanelTextColor = new Color32(250, 250, 220, 255);
+        public static Color DaggerfallDefaultTempleAutomapColor = new Color32(69, 125, 195, 255);
+        public static Color DaggerfallDefaultShopAutomapColor = new Color32(190, 85, 24, 255);
+        public static Color DaggerfallDefaultTavernAutomapColor = new Color32(85, 117, 48, 255);
+        public static Color DaggerfallDefaultHouseAutomapColor = new Color32(69, 60, 40, 255);
         public static Vector2 DaggerfallDefaultShadowPos = Vector2.one;
 
         public static Color MenuKhaki = new Color(0.9f, 0.9f, 0.5f, 1.0f);
@@ -145,6 +150,9 @@ namespace DaggerfallWorkshop.Game
         DaggerfallItemMakerWindow dfItemMakerWindow;
         DaggerfallPotionMakerWindow dfPotionMakerWindow;
         DaggerfallCourtWindow dfCourtWindow;
+
+        private List<System.Tuple<string, Action>> pauseOptionsDropdownItems
+            = new List<System.Tuple<string, Action>>();
 
         Material pixelFontMaterial;
         Material sdfFontMaterial;
@@ -419,6 +427,9 @@ namespace DaggerfallWorkshop.Game
                 if (Event.current.character != (char)0)
                     lastCharacterTyped = Event.current.character;
 
+                if (Event.current.keyCode != KeyCode.None)
+                    lastKeyCode = Event.current.keyCode;
+
                 if (lastCharacterTyped > 255)
                     lastCharacterTyped = (char)0;
             }
@@ -497,6 +508,7 @@ namespace DaggerfallWorkshop.Game
             dfExteriorAutomapWindow = (DaggerfallExteriorAutomapWindow)UIWindowFactory.GetInstance(UIWindowType.ExteriorAutomap, uiManager);
 
             instantiatePersistentWindowInstances = false;
+            RaiseOnInstantiatePersistentWindowInstances();
         }
 
         void ProcessMessages()
@@ -755,6 +767,27 @@ namespace DaggerfallWorkshop.Game
         {
             if (Instance.uiManager != null)
                 Instance.uiManager.PostMessage(message);
+        }
+
+        /// <summary>
+        /// Registers a title and click event to add to the pause window dropdown menu
+        /// </summary>
+        /// <param name="text">The text of the dropdown button. </param>
+        /// <param name="action">The action executed for clicking on the button.</param>
+        public void RegisterPauseOptionToDropdown(string text, Action action)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                throw new ArgumentException("'text' cannot be null or whitespace");
+            if (action == null)
+                throw new ArgumentNullException("action");
+
+            pauseOptionsDropdownItems.Add(new System.Tuple<string, Action>(text, action));
+        }
+
+        // Hide the list in order to prevent direct insertion from modders without registering
+        public System.Tuple<string, Action>[] GetPauseOptionsDropdownItems()
+        {
+            return pauseOptionsDropdownItems.ToArray();
         }
 
         public void PopupMessage(string text)
@@ -1525,6 +1558,16 @@ namespace DaggerfallWorkshop.Game
         private void GivePc_OnOfferPending(Questing.Actions.GivePc sender)
         {
             lastPendingOfferSender = sender;
+        }
+
+        /// <summary>
+        /// Event raised when the persistent window instances have been instantiated.
+        /// </summary>
+        public delegate void OnInstantiatePersistentWindowInstancesHandler();
+        public event OnInstantiatePersistentWindowInstancesHandler OnInstantiatePersistentWindowInstances;
+        protected virtual void RaiseOnInstantiatePersistentWindowInstances()
+        {
+            OnInstantiatePersistentWindowInstances?.Invoke();
         }
 
         #endregion

@@ -4,8 +4,8 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:    
-// 
+// Contributors:
+//
 // Notes:
 //
 
@@ -17,8 +17,8 @@ public static class VersionInfo
     public const string DaggerfallUnityStatus = "alpha";
 
     // Last updated versions 22-March-2021
-    public const string DaggerfallUnityVersion = "0.01.10";
+    public const string DaggerfallUnityVersion = "0.01.20";
     public const string DaggerfallToolsForUnityVersion = "1.9.0";
-    
-    public const string BaselineUnityVersion = "2019.4.10f1";
+
+    public const string BaselineUnityVersion = "2019.4.28f1";
 }

@@ -81,6 +81,11 @@ namespace DaggerfallWorkshop.Game.UserInterface
 
         #region Properties
 
+        public List<ListItem> ListItems
+        {
+            get { return listItems; }
+        }
+
         /// <summary>
         /// Maximum length of label string.
         /// Setting to -1 allows for any length.
@@ -380,7 +385,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
             highlightedIndex = -1;
             if (verticalScrollMode == VerticalScrollModes.EntryWise)
             {
-                int row = (y / (font.GlyphHeight + rowSpacing));
+                int row = (y / ((int)(font.GlyphHeight * Scale.y) + rowSpacing));
                 int index = scrollIndex + row;
                 if (index >= 0 && index < Count)
                 {
@@ -420,7 +425,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
 
             if (verticalScrollMode == VerticalScrollModes.EntryWise)
             {
-                int row = (int)(clickPosition.y / (font.GlyphHeight + rowSpacing));
+                int row = (int)(clickPosition.y / ((int)(font.GlyphHeight * Scale.y) + rowSpacing));
                 int index = scrollIndex + row;
                 if (index >= 0 && index < Count)
                 {
@@ -558,15 +563,18 @@ namespace DaggerfallWorkshop.Game.UserInterface
             AddItem(text, out itemOut, position, tag);
         }
 
-        public void AddItems(string[] items)
+        public void AddItems(IEnumerable<string> items)
         {
+            if (items == null)
+                return;
+
             foreach (string item in items)
                 AddItem(item);
         }
 
-        public void AddItems(TextLabel[] labels)
+        public void AddItems(IEnumerable<TextLabel> labels)
         {
-            if (labels == null || labels.Length == 0)
+            if (labels == null)
                 return;
 
             ListItem itemOut;
@@ -750,7 +758,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
             if (Count == 0)
                 return;
 
-            rowsDisplayed = (int)(Size.y / font.GlyphHeight) - 1;
+            rowsDisplayed = (int)(Size.y / (int)(font.GlyphHeight * Scale.y)) - 1;
         }
 
         public int FindIndex(string text)

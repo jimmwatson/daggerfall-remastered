@@ -153,6 +153,8 @@ namespace DaggerfallWorkshop
         public bool LargeHUDOffsetHorse { get; set; }
         public bool CanDropQuestItems { get; set; }
         public bool RunInBackground { get; set; }
+        public bool EnableQuestDebugger { get; set; }
+        public int QuestRumorWeight { get; set; }
 
         // [Spells]
         public bool EnableSpellLighting { get; set; }
@@ -171,7 +173,7 @@ namespace DaggerfallWorkshop
         public bool HeadBobbing { get; set; }
         public int Handedness { get; set; }
         public float WeaponAttackThreshold { get; set; }
-        public float WeaponSensitivity { get; set; }
+        //public float WeaponSensitivity { get; set; }
         public bool MovementAcceleration { get; set; }
         public bool ToggleSneak { get; set; }
         public bool ClickToAttack { get; set; }
@@ -189,6 +191,10 @@ namespace DaggerfallWorkshop
         public bool AutomapAlwaysMaxOutSliceLevel { get; set; }
         public float ExteriorMapDefaultZoomLevel { get; set; }
         public bool ExteriorMapResetZoomLevelOnNewLocation { get; set; }
+        public Color32 AutomapTempleColor { get; set; }
+        public Color32 AutomapShopColor { get; set; }
+        public Color32 AutomapTavernColor { get; set; }
+        public Color32 AutomapHouseColor { get; set; }
 
         // [Startup]
         public int StartCellX { get; set; }
@@ -248,7 +254,7 @@ namespace DaggerfallWorkshop
             Fullscreen = GetBool(sectionVideo, "Fullscreen");
             ExclusiveFullscreen = GetBool(sectionVideo, "ExclusiveFullscreen");
             RunInBackground = GetBool(sectionVideo, "RunInBackground");
-            FieldOfView = GetInt(sectionVideo, "FieldOfView", 60, 80);
+            FieldOfView = GetInt(sectionVideo, "FieldOfView", 60, 120);
             MainFilterMode = GetInt(sectionVideo, "MainFilterMode", 0, 2);
             ShadowResolutionMode = GetInt(sectionVideo, "ShadowResolutionMode", 0, 3);
             QualityLevel = GetInt(sectionVideo, "QualityLevel", 0, 5);
@@ -303,6 +309,8 @@ namespace DaggerfallWorkshop
             LargeHUDUndockedOffsetWeapon = GetBool(sectionGUI, "LargeHUDUndockedOffsetWeapon");
             LargeHUDOffsetHorse = GetBool(sectionGUI, "LargeHUDOffsetHorse");
             CanDropQuestItems = GetBool(sectionGUI, "CanDropQuestItems");
+            EnableQuestDebugger = GetBool(sectionGUI, "EnableQuestDebugger");
+            QuestRumorWeight = GetInt(sectionGUI, "QuestRumorWeight", 1, 100);
 
             EnableSpellLighting = GetBool(sectionSpells, "EnableSpellLighting");
             EnableSpellShadows = GetBool(sectionSpells, "EnableSpellShadows");
@@ -320,7 +328,7 @@ namespace DaggerfallWorkshop
             HeadBobbing = GetBool(sectionControls, "HeadBobbing");
             Handedness = GetInt(sectionControls, "Handedness", 0, 3);
             WeaponAttackThreshold = GetFloat(sectionControls, "WeaponAttackThreshold", 0.001f, 1.0f);
-            WeaponSensitivity = GetFloat(sectionControls, "WeaponSensitivity", 0.1f, 10.0f);
+            //WeaponSensitivity = GetFloat(sectionControls, "WeaponSensitivity", 0.1f, 10.0f);
             ClickToAttack = GetBool(sectionControls, "ClickToAttack");
             CameraRecoilStrength = GetInt(sectionControls, "CameraRecoilStrength", 0, 4);
             SoundVolume = GetFloat(sectionControls, "SoundVolume", 0f, 1.0f);
@@ -335,6 +343,10 @@ namespace DaggerfallWorkshop
             AutomapAlwaysMaxOutSliceLevel = GetBool(sectionMap, "AutomapAlwaysMaxOutSliceLevel");            
             ExteriorMapDefaultZoomLevel = GetFloat(sectionMap, "ExteriorMapDefaultZoomLevel", 4, 31);
             ExteriorMapResetZoomLevelOnNewLocation = GetBool(sectionMap, "ExteriorMapResetZoomLevelOnNewLocation");
+            AutomapTempleColor = GetColor(sectionMap, "AutomapTempleColor", DaggerfallUI.DaggerfallDefaultTempleAutomapColor);
+            AutomapShopColor = GetColor(sectionMap, "AutomapShopColor", DaggerfallUI.DaggerfallDefaultShopAutomapColor);
+            AutomapTavernColor = GetColor(sectionMap, "AutomapTavernColor", DaggerfallUI.DaggerfallDefaultTavernAutomapColor);
+            AutomapHouseColor = GetColor(sectionMap, "AutomapHouseColor", DaggerfallUI.DaggerfallDefaultHouseAutomapColor);
 
             StartCellX = GetInt(sectionStartup, "StartCellX", 2, 997);
             StartCellY = GetInt(sectionStartup, "StartCellY", 2, 497);
@@ -441,6 +453,8 @@ namespace DaggerfallWorkshop
             SetBool(sectionGUI, "LargeHUDUndockedOffsetWeapon", LargeHUDUndockedOffsetWeapon);
             SetBool(sectionGUI, "LargeHUDOffsetHorse", LargeHUDOffsetHorse);
             SetBool(sectionGUI, "CanDropQuestItems", CanDropQuestItems);
+            SetBool(sectionGUI, "EnableQuestDebugger", EnableQuestDebugger);
+            SetInt(sectionGUI, "QuestRumorWeight", QuestRumorWeight);
 
             SetBool(sectionSpells, "EnableSpellLighting", EnableSpellLighting);
             SetBool(sectionSpells, "EnableSpellShadows", EnableSpellShadows);
@@ -458,7 +472,7 @@ namespace DaggerfallWorkshop
             SetBool(sectionControls, "HeadBobbing", HeadBobbing);
             SetInt(sectionControls, "Handedness", Handedness);
             SetFloat(sectionControls, "WeaponAttackThreshold", WeaponAttackThreshold);
-            SetFloat(sectionControls, "WeaponSensitivity", WeaponSensitivity);
+            //SetFloat(sectionControls, "WeaponSensitivity", WeaponSensitivity);
             SetBool(sectionControls, "ClickToAttack", ClickToAttack);
             SetInt(sectionControls, "CameraRecoilStrength", CameraRecoilStrength);
             SetFloat(sectionControls, "SoundVolume", SoundVolume);
@@ -466,6 +480,11 @@ namespace DaggerfallWorkshop
             SetBool(sectionControls, "InstantRepairs", InstantRepairs);
             SetBool(sectionControls, "AllowMagicRepairs", AllowMagicRepairs);
             SetBool(sectionControls, "BowDrawback", BowDrawback);
+
+            SetColor(sectionMap, "AutomapTempleColor", AutomapTempleColor);
+            SetColor(sectionMap, "AutomapShopColor", AutomapShopColor);
+            SetColor(sectionMap, "AutomapTavernColor", AutomapTavernColor);
+            SetColor(sectionMap, "AutomapHouseColor", AutomapHouseColor);
 
             SetInt(sectionStartup, "StartCellX", StartCellX);
             SetInt(sectionStartup, "StartCellY", StartCellY);
