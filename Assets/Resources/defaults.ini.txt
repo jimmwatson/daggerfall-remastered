@@ -3,8 +3,8 @@ MyDaggerfallPath=Assets\Daggerfall
 MyDaggerfallUnitySavePath=
 
 [Video]
-ResolutionWidth=1024
-ResolutionHeight=768
+ResolutionWidth=320
+ResolutionHeight=240
 RetroRenderingMode=1
 PostProcessingInRetroMode=4
 UseMipMapsInRetroMode=False
